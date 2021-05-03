@@ -87,23 +87,23 @@ So basically our main goal is to redule the "loss" of the output, to do that we 
 
 The gradient of a vector can be interpreted as the "direction and rate of the fastest increase". If the gradient of a function is non-zero at a point p, the direction of the gradient in which the function increases most quickly from p, and the magnitude of the gradient is the rate of increase in that direction, the greatest absolute directional derivative.
 
-<center>
+<div align="center">
 <img src="https://latex.codecogs.com/svg.latex?\bg_white&space;\large&space;\nabla&space;f&space;(x,&space;y,&space;z)&space;=&space;\left&space;(&space;\dfrac{\partial&space;f}{&space;\partial&space;x}&space;,&space;\dfrac{\partial&space;f}{&space;\partial&space;y}&space;,&space;\dfrac{\partial&space;f}{\partial&space;z}&space;\right&space;)&space;=&space;\dfrac{\partial&space;f}{\partial&space;x}\textbf{i}&space;&plus;&space;\dfrac{\partial&space;f}{&space;\partial&space;y}\textbf{j}&space;&plus;&space;\dfrac{\partial&space;f}{&space;\partial&space;z}\textbf{k}" title="\large \nabla f (x, y, z) = \left ( \dfrac{\partial f}{ \partial x} , \dfrac{\partial f}{ \partial y} , \dfrac{\partial f}{\partial z} \right ) = \dfrac{\partial f}{\partial x}\textbf{i} + \dfrac{\partial f}{ \partial y}\textbf{j} + \dfrac{\partial f}{ \partial z}\textbf{k}" />
-</center>
+</div>
 
 And also you must be wondering how the partial derivatives came in, this `grad` was the reason so,
 
 Here would be `grad L` (gradient of Loss)
 
-<center>
+<div align="center">
 <img src="https://latex.codecogs.com/svg.latex?\bg_white&space;\large&space;\nabla&space;L=\begin{bmatrix}&space;\frac{\partial&space;L}{\partial&space;\theta_{0}&space;}&space;\\&space;\frac{\partial&space;L}{\partial&space;\theta_{1}&space;}&space;\\&space;...&space;\\&space;\frac{\partial&space;L}{\partial&space;\theta_{n-1}&space;}&space;\\&space;\end{bmatrix}" title="\large \nabla L=\begin{bmatrix} \frac{\partial L}{\partial \theta_{0} } \\ \frac{\partial L}{\partial \theta_{1} } \\ ... \\ \frac{\partial L}{\partial \theta_{n-1} } \\ \end{bmatrix}" />
-</center>
+</div>
 
 Now does it make all sense?  Since the `grad F` gives the direction of highest increase, we multiple this `grad F` by `-ve 1`, thus now we have the direction of highest decrease in the loss value, and we thus move towards that steepest decreasing loss! amazing right?
 
-<center>
+<div align="center">
 <img src="https://latex.codecogs.com/svg.latex?\bg_white&space;\large&space;W_{new}&space;=&space;W-\eta&space;\nabla&space;L" title="\large W_{new} = W-\eta \nabla L" />
-</center>
+</div>
 
 But what is this chain rule?
 
@@ -117,16 +117,16 @@ The problem is that <img src="https://latex.codecogs.com/svg.latex?\frac{\partia
 
 This is the chain rule from maths
 
-<center>
+<div align="center">
 <img src="chain_rule.png">
-</center>
+</div>
 
 see how <img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;z}{\partial&space;s}&space;=&space;\frac{\partial&space;z}{\partial&space;x}\frac{\partial&space;x}{\partial&space;s}" title="\frac{\partial z}{\partial s} = \frac{\partial z}{\partial x}\frac{\partial x}{\partial s}" />
 
 Similarly,
 
-<center>
+<div align="center">
 <img src="https://latex.codecogs.com/svg.latex?\frac{\partial&space;L}{\partial&space;\theta_{0}}&space;=&space;\frac{\partial&space;L_{0}}{\partial&space;o_{0}}\frac{\partial&space;o_{0}}{\partial&space;i_{0}}&space;\frac{\partial&space;o_{0}}{\partial&space;\theta_{0}}" title="\frac{\partial L}{\partial \theta_{0}} = \frac{\partial L_{0}}{\partial o_{0}}\frac{\partial o_{0}}{\partial i_{0}} \frac{\partial o_{0}}{\partial \theta_{0}}" />
-</center>
+</div>
 
 That's the chain rule, plain and simple
