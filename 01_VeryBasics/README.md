@@ -59,11 +59,11 @@ If we initialize all of the weights to zero, then during backprop, the derivativ
 
 In Random Initialization, quite often we sample from the Normal Distrubution, why ?
 
-```
+
 Usually the data distribution in Nature follows a Normal distribution ( few examples like - age, income, height, weight etc., ) . So its the best approximation when we are not aware of the underlying distribution pattern.
 
 Most often the goal in ML/ AI is to strive to make the data linearly separable even if it means projecting the data into higher dimensional space so as to find a fitting "hyperplane" (for example - SVM kernels, Neural net layers, Softmax etc.,). The reason for this being "Linear boundaries always help in reducing variance and is the most simplistic, natural and interpret-able" besides reducing mathematical / computational complexities. And, when we aim for linear separability, its always good to reduce the effect of outliers, influencing points and leverage points. Why? Because the hyperplane is very sensitive to the influencing points and leverage points (aka outliers) - To undertstand this - Lets shift to a 2D space where we have one predictor (X) and one target(y) and assume there exists a good positive correlation between X and y. Given this, if our X is normally distributed and y is also normally distributed, you are most likely to fit a straight line that has many points centered in the middle of the line rather than the end-points (aka outliers, leverage / influencing points). So the predicted regression line will most likely suffer little variance when predicting on unseen data.
-```
+
 ~ [stackoverflow](https://stats.stackexchange.com/a/303640https://stats.stackexchange.com/a/303640)
 
 Xavier and Kaiming initialization are some of the most commonly used methods for weight initialization, more on it [https://pouannes.github.io/blog/initialization/](https://pouannes.github.io/blog/initialization/)
