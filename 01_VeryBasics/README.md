@@ -29,6 +29,8 @@ Colab: [https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/01
 
 Excel Sheet Neural Network: [https://drive.google.com/file/d/1Dbv_OaLL44UykJtRjBVrS7aoXCyFwmle/view?usp=sharing](https://drive.google.com/file/d/1Dbv_OaLL44UykJtRjBVrS7aoXCyFwmle/view?usp=sharing)
 
+Tensorflow Playground: [http://playground.tensorflow.org/](http://playground.tensorflow.org/)
+
 1. What is a "neuron" in a neural network
 
 A neuron is the fundamental block of any deep learning network, they can be thought of being analogous to a human brain neuron.
