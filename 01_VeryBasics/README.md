@@ -19,6 +19,12 @@ You must upload your assignment to a public GitHub Repository and share the link
 
 ## Solution
 
+README: [https://satyajitghana.github.io/TSAI-DeepNLP-END2.0/01_VeryBasics/](https://satyajitghana.github.io/TSAI-DeepNLP-END2.0/01_VeryBasics/)
+
+Github Notebook: [https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/01_VeryBasics/END2_0_Session_1.ipynb](https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/01_VeryBasics/END2_0_Session_1.ipynb)
+
+Colab: [https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/01_VeryBasics/END2_0_Session_1.ipynb](https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/01_VeryBasics/END2_0_Session_1.ipynb)
+
 ![network](network.png)
 
 1. What is a "neuron" in a neural network
