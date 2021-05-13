@@ -18,6 +18,8 @@
 
 Link to Sheets: [Click Here](https://docs.google.com/spreadsheets/d/e/2PACX-1vQt6ZBcXJcHRZbYVWIIXLG6qheyKbx8ac7vDG8geqoeCQdOTJI3kZPe6pyAVdxCYb0paFkR8jknNKGb/pubhtml)
 
+If image doesn't load: [Click Here](https://docs.google.com/spreadsheets/d/1JtTJBRXMzpiiWkEqqRlruNRudKrFkGdHJhQ3Ikzy5dw/edit?usp=sharing)
+
 See the Sheets named after each LR rate assigned, along with a LR Comparison sheet.
 
 Or see the below embed
@@ -100,10 +102,4 @@ $$\frac{\partial E_t}{\partial w_3} = \frac{\partial E_t}{\partial a_{h_2}} (a-h
 $$\frac{\partial E_t}{\partial w_4} = \frac{\partial E_t}{\partial a_{h_2}} (a-h_2)(1-a_{h_2})i_2$$
 
 Done :) Now we have all the gradients, just need to update :))))))  maza aaya
-
-
-
-
-
-
 
