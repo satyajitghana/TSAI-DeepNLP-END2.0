@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03_PyTorch101</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="pytorch-101">PyTorch 101</h1>
+<ol>
+<li>Write a neural network that can:
+<ol>
+<li>take 2 inputs:
+<ol>
+<li>an image from MNIST dataset, and</li>
+<li>a random number between 0 and 9</li>
+</ol>
+</li>
+<li>and gives two outputs:
+<ol>
+<li>the “number” that was represented by the MNIST image, and</li>
+<li>the “sum” of this number with the random number that was generated and sent as the input to the network<br>
+<img src="https://canvas.instructure.com/courses/2734517/files/136727252/preview" alt="assign.png"></li>
+</ol>
+</li>
+<li>you can mix fully connected layers and convolution layers</li>
+<li>you can use one-hot encoding to represent the random number input as well as the “summed” output.</li>
+</ol>
+</li>
+<li>Your code MUST be:
+<ol>
+<li>well documented (via readme file on github and comments in the code)</li>
+<li>must mention the data representation</li>
+<li>must mention your data generation strategy</li>
+<li>must mention how you have combined the two inputs</li>
+<li>must mention how you are evaluating your results</li>
+<li>must mention “what” results you finally got and how did you evaluate your results</li>
+<li>must mention what loss function you picked and why!</li>
+<li>training MUST happen on the GPU</li>
+</ol>
+</li>
+<li>Once done, upload the code with shot  <strong>training logs in the readme file</strong>  from colab to GitHub, and share the GitHub link (public repository)</li>
+<li>Please note that the deadline for your quiz is: May 21 6am</li>
+</ol>
+<h2 id="solution">Solution</h2>
+<p>Notebook: <a href="https://github.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/03_PyTorch101/MNIST_Adder.ipynb">https://github.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/03_PyTorch101/MNIST_Adder.ipynb</a></p>
+<p>Colab Link: <a href="https://githubtocolab.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/03_PyTorch101/MNIST_Adder.ipynb">https://githubtocolab.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/03_PyTorch101/MNIST_Adder.ipynb</a></p>
+<h3 id="data-representation">Data Representation</h3>
+<p>The Data sample is always represented as <code>(input, target)</code> where both the input and target have to be <code>torch.Tensor</code>, conversion to Tensor is taken care by PyTorch’s <code>DataLoader</code> for primitive types, for MNIST Image we need to use the torchvision transforms’ <code>ToTensor</code> method.</p>
+<p>My Representation for <code>(input, target</code> is <code>(img, random_number), (target, target + random_number)</code></p>
+<h3 id="data-generation-strategy">Data Generation Strategy</h3>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">class</span>  <span class="token class-name">MNISTAdder</span><span class="token punctuation">(</span>MNIST<span class="token punctuation">)</span><span class="token punctuation">:</span>
+	<span class="token triple-quoted-string string">"""
+	A modified version of MNIST
+	It adds a random number along with the mnist image, and the target now is
+	the mnist image's target + the random number
+	For example:
+	[MNIST Image for 1], 5 =&gt; 1, 6
+	Usage:
+	&gt;&gt;&gt; mnistadder = MNISTAdder(root='data')
+	&gt;&gt;&gt; dloader = DataLoader(mnistadder)
+	&gt;&gt;&gt; batch = next(iter(dloader))
+	"""</span>
+	<span class="token keyword">def</span>  <span class="token function">__init__</span><span class="token punctuation">(</span>
+		self<span class="token punctuation">,</span>
+		<span class="token operator">*</span>args<span class="token punctuation">,</span>
+		<span class="token operator">**</span>kwargs
+		<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+		<span class="token builtin">super</span><span class="token punctuation">(</span>MNISTAdder<span class="token punctuation">,</span>  self<span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token operator">*</span>args<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span>
+
+	<span class="token keyword">def</span>  <span class="token function">__getitem__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> Tuple<span class="token punctuation">[</span>Any<span class="token punctuation">,</span> Any<span class="token punctuation">]</span><span class="token punctuation">:</span>
+		img<span class="token punctuation">,</span> target <span class="token operator">=</span> <span class="token builtin">super</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>__class__<span class="token punctuation">,</span>  self<span class="token punctuation">)</span><span class="token punctuation">.</span>__getitem__<span class="token punctuation">(</span>index<span class="token punctuation">)</span>
+		random_number <span class="token operator">=</span> np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>randint<span class="token punctuation">(</span>low<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> high<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">)</span>
+
+		<span class="token keyword">return</span>  <span class="token punctuation">(</span>img<span class="token punctuation">,</span> random_number<span class="token punctuation">)</span><span class="token punctuation">,</span>  <span class="token punctuation">(</span>target<span class="token punctuation">,</span> target <span class="token operator">+</span> random_number<span class="token punctuation">)</span>
+
+</code></pre>
+<h3 id="the-model">The Model</h3>
+<p>The model’s primary task is to figure out the MNIST Image Classification, for that I simply copy-paste one of my past MNIST Classification Model and only use the backbone layers, which is upto the GAP Layer + Conv1D,</p>
+<p>Now after this i got 20 Channels, there 20 channels are flattened out, and concatenated with the one-hot representation of the “random” number, so 30 features in total, Now from here on i use Linear Layers which will do the addition, and out of that I will extract 10 features of my MNIST classification, and 19 features of my Addition classification.</p>
+<p>Why 19 features ? because 0-9 (MNIST) + 0-9 (Random) will be 0-18 numbers, or 19 possible numbers in total.</p>
+<pre class=" language-python"><code class="prism  language-python">    <span class="token keyword">def</span> <span class="token function">forward</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> mnist_img<span class="token punctuation">,</span> rand_num<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        rand_num <span class="token operator">=</span> F<span class="token punctuation">.</span>one_hot<span class="token punctuation">(</span>rand_num<span class="token punctuation">,</span> num_classes<span class="token operator">=</span>self<span class="token punctuation">.</span>num_classes<span class="token punctuation">)</span>
+        
+        <span class="token comment"># mnist embedding: 1x20</span>
+        mnist_embed <span class="token operator">=</span> self<span class="token punctuation">.</span>mnist_base<span class="token punctuation">(</span>mnist_img<span class="token punctuation">)</span>
+
+        <span class="token comment"># concat the mnist embedding and the random number = 30 features</span>
+        ccat <span class="token operator">=</span> torch<span class="token punctuation">.</span>cat<span class="token punctuation">(</span><span class="token punctuation">[</span>mnist_embed<span class="token punctuation">,</span> rand_num<span class="token punctuation">]</span><span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+        pre_out <span class="token operator">=</span> self<span class="token punctuation">.</span>prefinal_layer1<span class="token punctuation">(</span>ccat<span class="token punctuation">)</span>
+        pre_out <span class="token operator">=</span> self<span class="token punctuation">.</span>prefinal_layer2<span class="token punctuation">(</span>pre_out<span class="token punctuation">)</span>
+
+        mnist_out <span class="token operator">=</span> self<span class="token punctuation">.</span>mnist_final_layer<span class="token punctuation">(</span>pre_out<span class="token punctuation">)</span>
+        adder_out <span class="token operator">=</span> self<span class="token punctuation">.</span>adder_final_layer<span class="token punctuation">(</span>pre_out<span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> mnist_out<span class="token punctuation">,</span> adder_out
+</code></pre>
+<h3 id="loss-functions">Loss Functions</h3>
+<p>The first task is to classify the mnist image, so obvious choice of loss function for that is cross entropy loss, which is basically <code>log_softmax</code> + <code>nll_loss</code> (negative log likelihood).</p>
+<p>But for the adder, since i used a one hot representation for the output, cross entropy seems like a good choice for it too. So i went with that.</p>
+<p>Now both these losses are combined by simple addition. We can also give more weightage to the MNIST Loss, because without the correct prediction for MNIST we cannot give the correct output for the adder.</p>
+<pre class=" language-python"><code class="prism  language-python">	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+	self<span class="token punctuation">.</span>loss <span class="token operator">=</span> nn<span class="token punctuation">.</span>CrossEntropyLoss<span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+	<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+	<span class="token comment"># both mnist and adder use cross entropy loss</span>
+	mnist_loss <span class="token operator">=</span> self<span class="token punctuation">.</span>loss<span class="token punctuation">(</span>mnist_pred<span class="token punctuation">,</span> mnist_y<span class="token punctuation">)</span>
+	adder_loss <span class="token operator">=</span> self<span class="token punctuation">.</span>loss<span class="token punctuation">(</span>adder_pred<span class="token punctuation">,</span> adder_y<span class="token punctuation">)</span>
+	
+	<span class="token comment"># final loss is sum of the two loss</span>
+	loss <span class="token operator">=</span> mnist_loss <span class="token operator">+</span> adder_loss
+</code></pre>
+<h3 id="results-evaluation">Results Evaluation</h3>
+<p>The Output obtained from the model is evaluated against the target using accuracy functions, which basically does.</p>
+<p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>Accuracy</mtext><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mi>i</mi><mi>N</mi></munderover><mn>1</mn><mo stretchy="false">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>=</mo><msub><mover accent="true"><mi>y</mi><mo>^</mo></mover><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\text{Accuracy} = \frac{1}{N}\sum_i^N 1(y_i = \hat{y}_i)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.87777em; vertical-align: -0.19444em;"></span><span class="mord text"><span class="mord">Accuracy</span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 3.10601em; vertical-align: -1.27767em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.32144em;"><span class="" style="top: -2.314em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.10903em;">N</span></span></span><span class="" style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span class="" style="top: -3.677em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.686em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.82834em;"><span class="" style="top: -1.87233em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span><span class="" style="top: -3.05001em;"><span class="pstrut" style="height: 3.05em;"></span><span class=""><span class="mop op-symbol large-op">∑</span></span></span><span class="" style="top: -4.30001em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.27767em;"><span class=""></span></span></span></span></span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord">1</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.311664em;"><span class="" style="top: -2.55em; margin-left: -0.03588em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.69444em;"><span class="" style="top: -3em;"><span class="pstrut" style="height: 3em;"></span><span class="mord mathnormal" style="margin-right: 0.03588em;">y</span></span><span class="" style="top: -3em;"><span class="pstrut" style="height: 3em;"></span><span class="accent-body" style="left: -0.19444em;"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.19444em;"><span class=""></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.311664em;"><span class="" style="top: -2.55em; margin-left: -0.03588em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></span></p>
+<p>Where  <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord mathnormal" style="margin-right: 0.03588em;">y</span></span></span></span></span> is a tensor of target values, and <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>y</mi><mo>^</mo></mover></mrow><annotation encoding="application/x-tex">\hat{y}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.69444em;"><span class="" style="top: -3em;"><span class="pstrut" style="height: 3em;"></span><span class="mord mathnormal" style="margin-right: 0.03588em;">y</span></span><span class="" style="top: -3em;"><span class="pstrut" style="height: 3em;"></span><span class="accent-body" style="left: -0.19444em;"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.19444em;"><span class=""></span></span></span></span></span></span></span></span></span> is a tensor of predictions. <a href="https://github.com/PyTorchLightning/metrics/blob/master/torchmetrics/functional/classification/accuracy.py">Source Code</a></p>
+<pre class=" language-python"><code class="prism  language-python">        mnist_pred <span class="token operator">=</span> torch<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>F<span class="token punctuation">.</span>log_softmax<span class="token punctuation">(</span>mnist_pred<span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+        adder_pred <span class="token operator">=</span> torch<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>F<span class="token punctuation">.</span>log_softmax<span class="token punctuation">(</span>adder_pred<span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+        mnist_acc <span class="token operator">=</span> accuracy<span class="token punctuation">(</span>mnist_pred<span class="token punctuation">,</span> mnist_y<span class="token punctuation">)</span>
+        adder_acc <span class="token operator">=</span> accuracy<span class="token punctuation">(</span>adder_pred<span class="token punctuation">,</span> adder_y<span class="token punctuation">)</span>
+</code></pre>
+<p>The total accuracy is the product of <code>mnist_acc</code> and <code>adder_acc</code>, because end of the day we need both the mnist output AND the added value output to be correct.</p>
+<h2 id="training-logs">Training Logs</h2>
+<p>The Model was trained for <code>20</code> epochs with <code>SWE: Stochastic Weight Averaging</code> with <code>OneCycleLR</code></p>
+<p><strong>Model Parameters</strong></p>
+<pre><code>  | Name              | Type             | Params
+-------------------------------------------------------
+0 | mnist_base        | MNISTModel       | 9.9 K 
+1 | prefinal_layer1   | Sequential       | 1.9 K 
+2 | prefinal_layer2   | Sequential       | 3.7 K 
+3 | mnist_final_layer | Sequential       | 600   
+4 | adder_final_layer | Sequential       | 1.1 K 
+5 | loss              | CrossEntropyLoss | 0     
+-------------------------------------------------------
+17.3 K    Trainable params
+0         Non-trainable params
+17.3 K    Total params
+0.069     Total estimated model params size (MB)
+</code></pre>
+<p><strong>Model Testing</strong></p>
+<pre><code>&gt;&gt;&gt; trainer.test()
+&gt;&gt;&gt;
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+
+Testing: 100%
+
+78/78 [00:01&lt;00:00, 55.57it/s]
+
+--------------------------------------------------------------------------------
+DATALOADER:0 TEST RESULTS
+{'adder_acc': 0.9921875,
+ 'mnist_acc': 0.9931890964508057,
+ 'total_acc': 0.9855143427848816,
+ 'val_loss': 0.057633303105831146}
+</code></pre>
+<p>Achieved a Total Accuracy of <code>98.5%</code> in <code>20</code> epochs</p>
+
+<table>
+<thead>
+<tr>
+<th>Overall Accuracy</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img src="https://raw.githubusercontent.com/extensive-nlp/TSAI-DeepNLP-END2.0/a6ee4fe0a15be3447cd5a839672b072be9edff4f/03_PyTorch101/training_logs/total_acc.svg" alt="" width="400" height="400"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>MNIST Accuracy</th>
+<th>Adder Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img src="https://raw.githubusercontent.com/extensive-nlp/TSAI-DeepNLP-END2.0/a6ee4fe0a15be3447cd5a839672b072be9edff4f/03_PyTorch101/training_logs/mnist_acc.svg" alt="" width="400" height="400"></td>
+<td><img src="https://raw.githubusercontent.com/extensive-nlp/TSAI-DeepNLP-END2.0/a6ee4fe0a15be3447cd5a839672b072be9edff4f/03_PyTorch101/training_logs/adder_acc.svg" alt="" width="400" height="400"></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Learning Rate</th>
+<th>Validation Loss</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img src="https://raw.githubusercontent.com/extensive-nlp/TSAI-DeepNLP-END2.0/a6ee4fe0a15be3447cd5a839672b072be9edff4f/03_PyTorch101/training_logs/learning_rate.svg" alt="" width="400" height="400"></td>
+<td><img src="https://raw.githubusercontent.com/extensive-nlp/TSAI-DeepNLP-END2.0/a6ee4fe0a15be3447cd5a839672b072be9edff4f/03_PyTorch101/training_logs/val_loss.svg" alt="" width="400" height="400"></td>
+</tr>
+</tbody>
+</table><p><strong>LR Finder</strong></p>
+<p><img src="https://github.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/03_PyTorch101/training_logs/lr_finder.png?raw=true" alt="lr finder"></p>
+<pre><code>&gt;&gt;&gt; lr finder suggested lr: 0.16601414902764572
+</code></pre>
+<p><strong>Sample Test Outputs</strong></p>
+<p><img src="https://github.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/03_PyTorch101/training_logs/test_output1.png?raw=true" alt="enter image description here"></p>
+<p><img src="https://github.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/03_PyTorch101/training_logs/test_output2.png?raw=true" alt="enter image description here"></p>
+</div>
+</body>
+
+</html>
