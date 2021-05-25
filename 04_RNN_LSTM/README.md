@@ -14,10 +14,12 @@ Assignment:
 
 ## Solution
 
-LSTM Rewrite of the RNN Code: [https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/04_LSTM_IMDB.ipynb](https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/04_LSTM_IMDB.ipynb)
-
-Quiz Solution: [https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/04_LSTM_Practice.ipynb](https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/04_LSTM_Practice.ipynb)
-
+|Notebook Title|Colab Link| GitHub Link|
+|---|---|---|
+|LSTM Rewrite of the RNN Code| [Google Colab](https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/04_LSTM_IMDB.ipynb) | [GitHub](https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/04_LSTM_IMDB.ipynb) |
+| Original RNN Code | [Google Colab](https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/END2_Session_4.ipynb) | [GitHub](https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/END2_Session_4.ipynb) |
+Quiz Solution | [Google Colab](https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/04_LSTM_Practice.ipynb) | [GitHub](https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/04_LSTM_Practice.ipynb) |
+Quiz Question | [Google Colab](https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/EVA_P2S3.ipynb) | [GitHub](https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/EVA_P2S3.ipynb) |
 
 😢  I messed up the Quiz Again, forgot to set the hidden size to 100 for the above cells, only did it for the last training cells.
 

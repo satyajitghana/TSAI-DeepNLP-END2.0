@@ -13,3 +13,7 @@
 3. [PyTorch 101](03_PyTorch101/README.html)
 
     Basics of PyTorch. Here i built a custom MNIST model, that can classify MNIST Image as well as do addition of that predicted image with a random integer.
+
+4. [RNN & LSTMS](04_RNN_LSTM/README.md)
+
+    Built an LSTM From Scratch and Trained an IMDb Sentiment analysis classifier using RNN & LSTM with PyTorch Text.
