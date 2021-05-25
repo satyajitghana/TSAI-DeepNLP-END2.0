@@ -26,3 +26,4 @@ Quiz Question | [Google Colab](https://githubtocolab.com/satyajitghana/TSAI-Deep
 NOTES:
 
 - The PyTorch Text codes shared above is really outdated, i need to follow up on [https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html](https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html) and rewrite the code for my sanity.
+- Captum seems like a nice addition to PyTorch Text, more here: [https://captum.ai/tutorials/IMDB_TorchText_Interpret](https://captum.ai/tutorials/IMDB_TorchText_Interpret)
