@@ -23,6 +23,8 @@ Quiz Question | [Google Colab](https://githubtocolab.com/satyajitghana/TSAI-Deep
 
 😢  I messed up the Quiz Again, forgot to set the hidden size to 100 for the above cells, only did it for the last training cells.
 
+I also wrote a PyTorch Lightning version of the IMDB Text Classification: [GoogleColab](https://githubtocolab.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/IMDB_PyTorch_Lightning.ipynb) [GitHub](https://github.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/04_RNN_LSTM/IMDB_PyTorch_Lightning.ipynb)
+
 NOTES:
 
 - The PyTorch Text codes shared above is really outdated, i need to follow up on [https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html](https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html) and rewrite the code for my sanity.
