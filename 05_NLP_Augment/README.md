@@ -194,6 +194,14 @@ Notice `version_5` above
 - As soon as i saw reduced overfitting, i also saw that the model validation accuracy does not shake that much, it goes to 39 and stays there
 - Adding more layers did not help at all, i should have used resnet style identity layers, could help.
 
+### What could help get better accuracy?
+
+- Maybe try out BiDirectional LSTMs ?
+- Add CNN Layers ?
+- Use Pretrained Embeddings ? like GloVe
+
+I ran out of ideas, what could i do, since i need to use LSTMs only. But after reading a few papers from https://paperswithcode.com/sota/sentiment-analysis-on-sst-5-fine-grained it seems people have got 50% accuracies using LSTMs.
+
 ## Misclassifications
 
 ```

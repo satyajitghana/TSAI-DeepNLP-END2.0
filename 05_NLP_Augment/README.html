@@ -316,6 +316,13 @@ Augmented Text: The Rock is destined to be the 21st Century ' s new ` ` Conan ' 
 <li>As soon as i saw reduced overfitting, i also saw that the model validation accuracy does not shake that much, it goes to 39 and stays there</li>
 <li>Adding more layers did not help at all, i should have used resnet style identity layers, could help.</li>
 </ul>
+<h3 id="what-could-help-get-better-accuracy">What could help get better accuracy?</h3>
+<ul>
+<li>Maybe try out BiDirectional LSTMs ?</li>
+<li>Add CNN Layers ?</li>
+<li>Use Pretrained Embeddings ? like GloVe</li>
+</ul>
+<p>I ran out of ideas, what could i do, since i need to use LSTMs only. But after reading a few papers from <a href="https://paperswithcode.com/sota/sentiment-analysis-on-sst-5-fine-grained">https://paperswithcode.com/sota/sentiment-analysis-on-sst-5-fine-grained</a> it seems people have got 50% accuracies using LSTMs.</p>
 <h2 id="misclassifications">Misclassifications</h2>
 <pre><code>sentence:  the film provides some great insight into the neurotic mindset of all comics -- even those who have reached the absolute top of the game .
 label: neutral, predicted: positive
