@@ -17,3 +17,7 @@
 4. [RNN & LSTMS](04_RNN_LSTM/README.md)
 
     Built an LSTM From Scratch and Trained an IMDb Sentiment analysis classifier using RNN & LSTM with PyTorch Text.
+
+5. [LSTM & NLP Augmentation](05_NLP_Augment/README.html)
+
+    Trained a LSTM Model on the SST Dataset. And did a lot of NLP Augmentations.

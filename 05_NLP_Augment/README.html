@@ -1,0 +1,405 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>05_NLP_Augment</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="nlp-augment">05 NLP Augment</h1>
+<h2 id="assignment">Assignment</h2>
+<ol>
+<li>Look at  <a href="https://colab.research.google.com/drive/19wZi7P0Tzq9ZxeMz5EDmzfWFBLFWe6kN?usp=sharing&amp;pli=1&amp;authuser=3">this code (Links to an external site.)</a>  above. It has additional details on “Back Translate”, i.e. using Google translate to convert the sentences. It has “random_swap” function, as well as “random_delete”.</li>
+<li>Use “Back Translate”, “random_swap” and “random_delete” to augment the data you are training on</li>
+<li>Download the StanfordSentimentAnalysis Dataset from this  <a href="http://nlp.stanford.edu/~socherr/stanfordSentimentTreebank.zip">link (Links to an external site.)</a>(it might be troubling to download it, so force download on chrome). Use “datasetSentences.txt” and “sentiment_labels.txt” files from the zip you just downloaded as your dataset. This dataset contains just over 10,000 pieces of Stanford data from HTML files of Rotten Tomatoes. The sentiments are rated between 1 and 25, where one is the most negative and 25 is the most positive.</li>
+<li>Train your model and achieve  <strong>60%+ validation/test accuracy</strong>. Upload your collab file on GitHub with readme that contains details about your assignment/word (minimum  <strong>250 words</strong>),  <strong>training logs showing final validation accuracy, and outcomes for  10  example inputs from the test/validation data.</strong></li>
+<li><strong>You must submit before DUE date (and not “until” date).</strong></li>
+</ol>
+<h1 id="solution">Solution</h1>
+
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Augmentation</th>
+<th>Model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/SST_Dataset.ipynb">Github</a></td>
+<td><a href="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/SST_Dataset_Augmentation.ipynb">Github</a></td>
+<td><a href="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/SSTModel.ipynb">Github</a></td>
+</tr>
+<tr>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/SST_Dataset.ipynb">Colab</a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/SST_Dataset_Augmentation.ipynb">Colab</a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/SSTModel.ipynb">Colab</a></td>
+</tr>
+</tbody>
+</table><p>Tensorboard Experiment: <a href="https://tensorboard.dev/experiment/8LTXbHV8QQGXxBASaVYeJw/#scalars">https://tensorboard.dev/experiment/8LTXbHV8QQGXxBASaVYeJw/#scalars</a></p>
+<hr>
+<p>Note about Dataset</p>
+<p>There was this gist <a href="https://gist.github.com/wpm/52758adbf506fd84cff3cdc7fc109aad">https://gist.github.com/wpm/52758adbf506fd84cff3cdc7fc109aad</a><br>
+which claims to parse the SST dataset properly, but there are comments on the gist like</p>
+<blockquote>
+<p>This script make unusual thing - it pushes all non-sentence phrases from dictionary to train sample. So you will achive training sample with 230K trees inside. I’ve spent some time before notice this. Be careful</p>
+</blockquote>
+<p>Which is why this way was NOT considered, Instead I matched the phrases to the sentences, and based on that the label was got. Individual phrases were not included in training set. ONLY the sentences and their labels were included. Ofcourse with a lot of augmentations <code>○( ＾皿＾)っ Hehehe…</code></p>
+<h2 id="nlp-augmentations">NLP Augmentations</h2>
+<ol>
+<li>traduction inversée<br>
+(Back Translation)</li>
+</ol>
+<p>This was probably very tricky, and difficult to do. I was using <code>nlpaug</code> a package to simplify nlp augmentations and i used google translate python library to translate sentences, which basically internally using HTTP/2 API calls to translate.</p>
+<p>Here’s the code for that</p>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">from</span> nlpaug<span class="token punctuation">.</span>augmenter<span class="token punctuation">.</span>word <span class="token keyword">import</span> WordAugmenter
+
+<span class="token keyword">import</span> google_trans_new
+<span class="token keyword">from</span> google_trans_new <span class="token keyword">import</span> google_translator  
+
+<span class="token keyword">import</span> random
+
+<span class="token keyword">class</span> <span class="token class-name">BackTranslateAug</span><span class="token punctuation">(</span>WordAugmenter<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> name<span class="token operator">=</span><span class="token string">'BackTranslateAug'</span><span class="token punctuation">,</span> aug_min<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> aug_max<span class="token operator">=</span><span class="token number">10</span><span class="token punctuation">,</span> 
+                 aug_p<span class="token operator">=</span><span class="token number">0.3</span><span class="token punctuation">,</span> stopwords<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> tokenizer<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> reverse_tokenizer<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> 
+                 device<span class="token operator">=</span><span class="token string">'cpu'</span><span class="token punctuation">,</span> verbose<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> stopwords_regex<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token builtin">super</span><span class="token punctuation">(</span>BackTranslateAug<span class="token punctuation">,</span> self<span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>
+            action<span class="token operator">=</span>Action<span class="token punctuation">.</span>SUBSTITUTE<span class="token punctuation">,</span> name<span class="token operator">=</span>name<span class="token punctuation">,</span> aug_min<span class="token operator">=</span>aug_min<span class="token punctuation">,</span> aug_max<span class="token operator">=</span>aug_max<span class="token punctuation">,</span> 
+                 aug_p<span class="token operator">=</span>aug_p<span class="token punctuation">,</span> stopwords<span class="token operator">=</span>stopwords<span class="token punctuation">,</span> tokenizer<span class="token operator">=</span>tokenizer<span class="token punctuation">,</span> reverse_tokenizer<span class="token operator">=</span>reverse_tokenizer<span class="token punctuation">,</span> 
+                 device<span class="token operator">=</span>device<span class="token punctuation">,</span> verbose<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> stopwords_regex<span class="token operator">=</span>stopwords_regex<span class="token punctuation">)</span>
+        
+
+        self<span class="token punctuation">.</span>translator <span class="token operator">=</span> google_translator<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        
+    <span class="token keyword">def</span> <span class="token function">substitute</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> data<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token operator">not</span> data<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> data
+            
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>prob<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> self<span class="token punctuation">.</span>aug_p<span class="token punctuation">:</span>
+            trans_lang <span class="token operator">=</span> random<span class="token punctuation">.</span>choice<span class="token punctuation">(</span><span class="token builtin">list</span><span class="token punctuation">(</span>google_trans_new<span class="token punctuation">.</span>LANGUAGES<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            trans_text <span class="token operator">=</span> self<span class="token punctuation">.</span>translator<span class="token punctuation">.</span>translate<span class="token punctuation">(</span>data<span class="token punctuation">,</span> lang_src<span class="token operator">=</span><span class="token string">'en'</span><span class="token punctuation">,</span> lang_tgt<span class="token operator">=</span>trans_lang<span class="token punctuation">)</span> 
+
+            en_text <span class="token operator">=</span> self<span class="token punctuation">.</span>translator<span class="token punctuation">.</span>translate<span class="token punctuation">(</span>trans_text<span class="token punctuation">,</span> lang_src<span class="token operator">=</span>trans_lang<span class="token punctuation">,</span> lang_tgt<span class="token operator">=</span><span class="token string">'en'</span><span class="token punctuation">)</span> 
+
+            <span class="token keyword">return</span> en_text
+
+        <span class="token keyword">return</span> data
+</code></pre>
+<pre class=" language-python"><code class="prism  language-python">aug <span class="token operator">=</span> BackTranslateAug<span class="token punctuation">(</span>aug_max<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">,</span> aug_p<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+augmented_text <span class="token operator">=</span> aug<span class="token punctuation">.</span>augment<span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+</code></pre>
+<pre><code>Original: The Rock is destined to be the 21st Century 's new `` Conan '' and that he 's going to make a splash even greater than Arnold Schwarzenegger , Jean-Claud Van Damme or Steven Segal . 
+Augmented Text: The Rock is intended to be the 21st century new `` Conan 'and that he will do a splash even larger than Arnold Schwarzenegger, Jean-Claud Van Damme or Steven Segal.
+</code></pre>
+<p>Seems straight forward right ? just apply this over the entire <code>DataFrame</code> ?<br>
+<strong>WRONG</strong></p>
+<p><code>8% 958/11286 [09:54&lt;2:13:42, 1.29it/s]</code></p>
+<p>It would take about 2 hours to do this, even on an 8 core beast machine with really good internet. So i even tried different multiprocessing libraries, but they don’t work, it the google translate api library gets locked up. And i tested this on colab and also a standalone pc. same issue.</p>
+<p>ALSO you will exhaust the requests limit</p>
+<pre><code>[/usr/local/lib/python3.7/dist-packages/google_trans_new/google_trans_new.py](https://localhost:8080/#) in translate(self, text, lang_tgt, lang_src, pronounce)  192  except  requests.exceptions.HTTPError  as  e:  193  # Request successful, bad response  --&gt; 194  raise  google_new_transError(tts=self,  response=r)  195  except  requests.exceptions.RequestException  as  e:  196  # Request failed  
+
+google_new_transError: 429 (Too Many Requests) from TTS API. Probable cause: Unknown
+</code></pre>
+<p>So what can you do ?</p>
+<p><strong>PLAY SMORT</strong></p>
+<p>Beat Google at their own game.</p>
+<p>When i was struggling with this, i realised something, i remembered that there’s google translate api built into Google Sheets, so here i come, using Google Sheets as a NLP Data Augmentor.</p>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/gsheet_translate.png?raw=true" alt="gsheet augmentor"></p>
+<p>It took about 60-70 mins, but it was done atleast <code>(～￣▽￣)～</code></p>
+<p><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5G4wKHEXkseaSy_8khXdmUqfx2jVUK4T-ITSeq8AMB1QWJoyZrpzelCf8Sb70mhs0knjqCEdZguWT/pubhtml">Link to Google Sheet Back Translate Augmentor</a></p>
+<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5G4wKHEXkseaSy_8khXdmUqfx2jVUK4T-ITSeq8AMB1QWJoyZrpzelCf8Sb70mhs0knjqCEdZguWT/pubhtml?widget=true&amp;headers=false" width="700" height="500"></iframe>
+<ol start="2">
+<li>Synonym Augment</li>
+</ol>
+<p>Substitutes a random word with their synonym</p>
+<pre class=" language-python"><code class="prism  language-python">aug <span class="token operator">=</span> naw<span class="token punctuation">.</span>SynonymAug<span class="token punctuation">(</span>aug_src<span class="token operator">=</span><span class="token string">'wordnet'</span><span class="token punctuation">)</span>
+synonym_sentences <span class="token operator">=</span> dataset_aug<span class="token punctuation">[</span><span class="token string">'sentence'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>progress_apply<span class="token punctuation">(</span>aug<span class="token punctuation">.</span>augment<span class="token punctuation">)</span>
+</code></pre>
+<pre><code>Original: The Rock is destined to be the 21st Century 's new `` Conan '' and that he 's going to make a splash even greater than Arnold Schwarzenegger , Jean-Claud Van Damme or Steven Segal . 
+Augmented Text: The Rock is destined to follow the 21st Hundred ' s new ` ` Conan ' ' and that helium ' s going to make a splash yet swell than Arnold Schwarzenegger, Blue jean - Claud Van Damme or Steven Segal.
+</code></pre>
+<ol start="3">
+<li>Random Delete</li>
+</ol>
+<pre class=" language-python"><code class="prism  language-python">aug <span class="token operator">=</span> naw<span class="token punctuation">.</span>RandomWordAug<span class="token punctuation">(</span>aug_max<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">)</span>
+augmented_text <span class="token operator">=</span> aug<span class="token punctuation">.</span>augment<span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+</code></pre>
+<pre><code>Original: The Rock is destined to be the 21st Century 's new `` Conan '' and that he 's going to make a splash even greater than Arnold Schwarzenegger , Jean-Claud Van Damme or Steven Segal . 
+Augmented Text: The Rock is destined to be the 21st ' s new ` ` Conan ' ' that ' s going to make a splash even greater than Arnold Schwarzenegger, Jean - Claud Van Damme or Steven Segal.
+</code></pre>
+<ol start="4">
+<li>Random Swap</li>
+</ol>
+<pre class=" language-python"><code class="prism  language-python">aug <span class="token operator">=</span> naw<span class="token punctuation">.</span>RandomWordAug<span class="token punctuation">(</span>action<span class="token operator">=</span><span class="token string">"swap"</span><span class="token punctuation">,</span> aug_max<span class="token operator">=</span><span class="token number">3</span><span class="token punctuation">)</span>
+augmented_text <span class="token operator">=</span> aug<span class="token punctuation">.</span>augment<span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+</code></pre>
+<pre><code>Original: The Rock is destined to be the 21st Century 's new `` Conan '' and that he 's going to make a splash even greater than Arnold Schwarzenegger , Jean-Claud Van Damme or Steven Segal . 
+Augmented Text: The Rock is destined to be the 21st Century ' s new ` ` Conan ' ' and he that ' s going to make a splash even greater than Arnold, Schwarzenegger Jean Claud - Van Damme or Steven Segal.
+</code></pre>
+<h2 id="el-modelo">El Modelo</h2>
+<p>Why did I stack 5 layers of LSTM ?</p>
+<p>😅 I am new to NLP, i should have done research, so it turns out for classification tasks taking 2-3 layers is enough, we generally use more LSTM layers for sequence generation like machine translation.</p>
+<blockquote>
+<p>While it is not theoretically clear what is the additional power gained by the deeper architecture, it was observed empirically that deep RNNs work better than shallower ones on some tasks. In particular, Sutskever et al (2014) report that a 4-layers deep architecture was crucial in achieving good machine-translation performance in an encoder-decoder framework. Irsoy and Cardie (2014) also report improved results from moving from a one-layer BI-RNN to an architecture with several layers. Many other works report result using layered RNN architectures, but do not explicitly compare to 1-layer RNNs.</p>
+</blockquote>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/model.png?raw=true" alt="model"></p>
+<h2 id="experiments">Experiments</h2>
+
+<table>
+<thead>
+<tr>
+<th>Model <code>[embedding_dim, dropout]</code></th>
+<th>LSTM <code>[hidden_dim,layers]</code></th>
+<th>Augmentation</th>
+<th>Epochs</th>
+<th>Test Accuracy</th>
+<th>Remark</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>128, 0.2</td>
+<td>256, 5</td>
+<td>delete, swap</td>
+<td>100</td>
+<td>40.8</td>
+<td>Heavy Overfit</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>128, 0.2</td>
+<td>256, 5</td>
+<td>delete, swap, synonym, translate</td>
+<td>30</td>
+<td>40.3</td>
+<td>More Augmentation, Heavy Overfit</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>128, 0.2</td>
+<td>256, 2</td>
+<td>delete, swap, synonym, translate</td>
+<td>30</td>
+<td>40.2</td>
+<td>Less Layers, Heavy Overfit</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>128, 0.5</td>
+<td>256, 2</td>
+<td>delete, swap, synonym, translate</td>
+<td>30</td>
+<td>39.7</td>
+<td>Increased Dropout, Still Heavy Overfit</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>128, 0.5</td>
+<td>128, 2</td>
+<td>delete, swap, synonym, translate</td>
+<td>30</td>
+<td>40.9</td>
+<td>Decreased <code>hidden_dim</code>, Reduced Overfit</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>128, 0.5</td>
+<td>64, 2</td>
+<td>delete, swap, synonym, translate</td>
+<td>30</td>
+<td>42.2</td>
+<td>Decreased <code>hidden_dim</code>, Reduced Overfit</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>128, 0.5</td>
+<td>32, 2</td>
+<td>delete, swap, synonym, translate</td>
+<td>30</td>
+<td>40.2</td>
+<td>Decreased <code>hidden_dim</code>, Acc Reduced</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>128, 0.5</td>
+<td>64, 5</td>
+<td>delete, swap, synonym, translate</td>
+<td>30</td>
+<td>40.5</td>
+<td>Increased Num Layers</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>128, 0.0</td>
+<td>64, 1</td>
+<td>delete, swap, synonym, translate</td>
+<td>30</td>
+<td>40.1</td>
+<td>Single Layer LSTM, 0 Dropout</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table><p>The logs can be viewed at <a href="https://tensorboard.dev/experiment/8LTXbHV8QQGXxBASaVYeJw/#scalars">https://tensorboard.dev/experiment/8LTXbHV8QQGXxBASaVYeJw/#scalars</a></p>
+<p>Notice <code>version_5</code> above</p>
+<ul>
+<li>I forgot to take max of test accuracies <code>(。﹏。*)</code> so the test accuracy shown in the plot is the last epoch test accuracy, instead the validation accuracy can be considered.</li>
+<li>The epochs was reduced to 30, because now with augmentation it was 27K datapoints, so its almost 3 times as much, the epochs was reduced approx 3 times ~ 30 epochs.</li>
+<li>It takes only about <strong>5 epochs</strong> to reach <strong>39% accuracy</strong>, but from here on it gets difficult and the model starts overfitting.</li>
+<li>As soon as i saw reduced overfitting, i also saw that the model validation accuracy does not shake that much, it goes to 39 and stays there</li>
+<li>Adding more layers did not help at all, i should have used resnet style identity layers, could help.</li>
+</ul>
+<h2 id="misclassifications">Misclassifications</h2>
+<pre><code>sentence:  the film provides some great insight into the neurotic mindset of all comics -- even those who have reached the absolute top of the game .
+label: neutral, predicted: positive
+
+
+sentence:  offers that rare combination of entertainment and education .
+label: very positive, predicted: positive
+
+
+sentence:  perhaps no picture ever made has more literally showed that the road to hell is paved with good intentions .
+label: positive, predicted: neutral
+
+
+sentence:  steers turns in a snappy screenplay that &lt;unk&gt; at the edges it ' s so clever you want to hate it .
+label: positive, predicted: neutral
+
+
+sentence:  but he somehow pulls it off .
+label: positive, predicted: neutral
+
+
+sentence:  take care of my cat offers a refreshingly different slice of asian cinema .
+label: positive, predicted: very positive
+
+
+sentence:  ultimately , it &lt;unk&gt; the reasons we need stories so much .
+label: neutral, predicted: negative
+
+
+sentence:  the movie ' s ripe , &lt;unk&gt; beauty will tempt those willing to probe its inscrutable mysteries .
+label: positive, predicted: very positive
+
+
+sentence:  offers a breath of the fresh air of true sophistication .
+label: very positive, predicted: positive
+
+
+sentence:  a disturbing and frighteningly evocative assembly of imagery and hypnotic music composed by philip glass .
+label: neutral, predicted: very positive
+</code></pre>
+<h2 id="correct-classifications">Correct Classifications</h2>
+<pre><code>sentence:  effective but &lt;unk&gt; biopic
+label: neutral, predicted: neutral
+
+
+sentence:  if you sometimes like to go to the movies to have fun , wasabi is a good place to start .
+label: positive, predicted: positive
+
+
+sentence:  emerges as something rare , an issue movie that ' s so honest and keenly observed that it doesn ' t feel like one .
+label: very positive, predicted: very positive
+
+
+sentence:  this is a film well worth seeing , talking and singing heads and all .
+label: very positive, predicted: very positive
+
+
+sentence:  what really surprises about wisegirls is its low-key quality and genuine tenderness .
+label: positive, predicted: positive
+
+
+sentence:  &lt;unk&gt; wendigo is &lt;unk&gt; why we go to the cinema to be fed through the eye , the heart , the mind .
+label: positive, predicted: positive
+
+
+sentence:  one of the greatest family-oriented , fantasy-adventure movies ever .
+label: very positive, predicted: very positive
+
+
+sentence:  an utterly compelling ` who wrote it ' in which the reputation of the most famous author who ever lived comes into question .
+label: positive, predicted: positive
+
+
+sentence:  illuminating if overly talky documentary .
+label: neutral, predicted: neutral
+
+
+sentence:  a masterpiece four years in the making .
+label: very positive, predicted: very positive
+</code></pre>
+<h2 id="learnings">Learnings</h2>
+<ul>
+<li>Learn how to use CometML or W&amp;B, so i can save even the notebook code along with the hparam tuning values</li>
+</ul>
+</div>
+</body>
+
+</html>
