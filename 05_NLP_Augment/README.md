@@ -184,6 +184,8 @@ Why did I stack 5 layers of LSTM ?
 
 The logs can be viewed at https://tensorboard.dev/experiment/8LTXbHV8QQGXxBASaVYeJw/#scalars
 
+![val_acc](https://github.com/extensive-nlp/TSAI-DeepNLP-END2.0/blob/main/05_NLP_Augment/val_acc.png?raw=true)
+
 Notice `version_5` above
 
 - I forgot to take max of test accuracies `(。﹏。*)` so the test accuracy shown in the plot is the last epoch test accuracy, instead the validation accuracy can be considered.
