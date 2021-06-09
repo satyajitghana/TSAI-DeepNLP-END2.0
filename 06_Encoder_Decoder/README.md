@@ -45,6 +45,78 @@ Tensorboard ExperimentLogs: [https://tensorboard.dev/experiment/HaR2fvGGSn6gWznI
 
 ![val accuracy](https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/06_Encoder_Decoder/val_accuracy.png?raw=true)
 
+## Model
+
+### The Encoder
+
+```python
+class Encoder(nn.Module):
+    def __init__(self, input_dim=300, hidden_dim=16, proj_dim=64):
+        super(self.__class__, self).__init__()
+
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+        self.proj_dim = proj_dim
+
+        self.encode_lstm = nn.LSTMCell(self.input_dim, self.hidden_dim, bias=False)
+        self.encoder_proj = nn.Linear(self.hidden_dim, self.proj_dim, bias=False)
+
+    def init_hidden(self, device, batch_size):
+        zeros = torch.zeros(batch_size, self.hidden_dim, device=device)
+        return (zeros, zeros)
+    
+    def forward(self, sequences, lengths, hidden_state, debug=False):
+        (hh, cc) = hidden_state
+
+        for idx in range(lengths[0]):
+            (hh, cc) = self.encode_lstm(sequences[0][idx].unsqueeze(0), (hh, cc))
+            # print(hx[0][0].numpy())
+            if debug:
+                sns.heatmap(hh[0].detach().numpy().reshape(-1, 4), fmt=".2f", vmin=-1, vmax=1, annot=True, cmap="YlGnBu").set(title=f"Encoder Hidden State, step={idx}")
+                plt.show()
+
+        encoder_sv = self.encoder_proj(hh)
+
+        if debug:
+            sns.heatmap(encoder_sv[0].detach().numpy().reshape(-1, 1), fmt=".2f", vmin=-1, vmax=1, annot=True, cmap="YlGnBu").set(title=f"Encoder Single Vector")
+            plt.show()
+
+        return encoder_sv, (hh, cc)
+```
+
+### The Decoder
+
+```python
+class Decoder(nn.Module):
+    def __init__(self, input_dim=64, hidden_dim=16, proj_dim=64):
+        super(self.__class__, self).__init__()
+
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+        self.proj_dim = proj_dim
+
+        self.decode_lstm = nn.LSTMCell(self.input_dim, self.hidden_dim, bias=False)
+        self.decoder_proj = nn.Linear(self.hidden_dim, self.proj_dim, bias=False)
+
+    def forward(self, encoder_inp, hidden_state, max_steps=5, debug=False):
+        (hh, cc) = hidden_state
+
+        for idx in range(max_steps):
+            (hh, cc) = self.decode_lstm(encoder_inp, (hh, cc))
+            if debug:
+                sns.heatmap(hh[0].detach().numpy().reshape(-1, 4), fmt=".2f", vmin=-1, vmax=1, annot=True, cmap="YlGnBu").set(title=f"Decoder Hidden State, step={idx}")
+                plt.show()
+
+        decoder_sv = self.decoder_proj(hh)
+        if debug:
+            sns.heatmap(decoder_sv[0].detach().numpy().reshape(-1, 1), fmt=".2f", vmin=-1, vmax=1, annot=True, cmap="YlGnBu").set(title=f"Decoder Single Vector")
+            plt.show()
+
+        return decoder_sv
+```
+
+This is as simple as it gets !
+
 ## Experiments
 
 | Encoder `[hidden_dim]`| Decoder `[hidden_dim]`   | Augmentation | Epochs | Test Accuracy | Remark |
