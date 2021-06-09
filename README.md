@@ -21,3 +21,7 @@
 5. [LSTM & NLP Augmentation](05_NLP_Augment/README.html)
 
     Trained a LSTM Model on the SST Dataset. And did a lot of NLP Augmentations.
+
+6. [Encoder Decoder](06_Encoder_Decoder/index.html)
+
+    A Simple Encoder-Decoder Architecture, but for Classification ! I got to learn how encoder-decoder's work, and how the feature vector is used to compress and extract information :)
