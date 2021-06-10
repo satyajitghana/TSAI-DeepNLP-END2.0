@@ -2,6 +2,13 @@
 
 ## Website: [https://extensive-nlp.github.io/TSAI-DeepNLP-END2.0/](https://extensive-nlp.github.io/TSAI-DeepNLP-END2.0/)
 
+<center>
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fsatyajitghana%2FTSAI-DeepNLP-END2.0&count_bg=%2379C83D&title_bg=%23555555&icon=pytorch.svg&icon_color=%23E7E7E7&title=satyajitghana%20traffic&edge_flat=false)](https://hits.seeyoufarm.com)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fextensive-nlp%2FTSAI-DeepNLP-END2.0&count_bg=%2379C83D&title_bg=%23555555&icon=pytorch.svg&icon_color=%23E7E7E7&title=extensive-nlp%20traffic&edge_flat=false)](https://hits.seeyoufarm.com)
+
+</center>
+
 1. [Very Basics](01_VeryBasics)
 
     This describes all the basics of a neural network, how gradient descent works, learning rate, fully connected neurons, chain rule, etc.
