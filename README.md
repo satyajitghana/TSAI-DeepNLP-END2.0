@@ -12,6 +12,8 @@
 
 Best viewed on the website
 
+NOTE: There might be dependencies issues with torchtext version used in the notebooks, please see [this](DEPENDENCIES.md) which may solve the issue
+
 ---
 <div align="center">
 
