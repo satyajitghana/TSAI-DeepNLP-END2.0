@@ -48,3 +48,9 @@ NOTE: There might be dependencies issues with torchtext version used in the note
 6. [Encoder Decoder](06_Encoder_Decoder/index.html)
 
     A Simple Encoder-Decoder Architecture, but for Classification ! I got to learn how encoder-decoder's work, and how the feature vector is used to compress and extract information :)
+
+7. [Seq2Seq](07_Seq2Seq/index.html)
+
+    Simple Sequence-to-Sequence Model for Question Answer and Similar Question Generation
+
+    Also includes a redo of `5` without any augmentation. [05 Redo](07_Seq2Seq/07_SST_Redo.html)

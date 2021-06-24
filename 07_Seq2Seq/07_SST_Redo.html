@@ -1,0 +1,372 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>07_SST_Redo</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h2 id="sst-model-redo-wo-augmentation">07 SST Model Redo (w/o Augmentation)</h2>
+<h2 id="assignment">Assignment</h2>
+<ol>
+<li>Assignment 1 (500 points):
+<ol>
+<li>Submit the Assignment 5 as Assignment 1. To be clear,
+<ol>
+<li>ONLY use datasetSentences.txt. (no augmentation required)</li>
+<li>Your dataset must have around 12k examples.</li>
+<li>Split Dataset into 70/30 Train and Test (no validation)</li>
+<li>Convert floating-point labels into 5 classes (0-0.2, 0.2-0.4, 0.4-0.6, 0.6-0.8, 0.8-1.0)</li>
+<li>Upload to github and proceed to answer these questions asked in the S7 - Assignment Solutions, where these questions are asked:
+<ol>
+<li>Share the link to your github repo (100 pts for code quality/file structure/model accuracy)</li>
+<li>Share the link to your readme file (200 points for proper readme file)</li>
+<li>Copy-paste the code related to your dataset preparation (100 pts)</li>
+<li>Share your training log text (you MUST have been testing for test accuracy after every epoch) (200 pts)</li>
+<li>Share the prediction on 10 samples picked from the test dataset. (100 pts)</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="solution">Solution</h2>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>NBViewer</th>
+<th>Google Colab</th>
+<th>TensorBoard Logs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SST Dataset Preparation</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/07_Seq2Seq/SST_Redo/SST_Dataset_Augmentation.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/07_Seq2Seq/SST_Redo/SST_Dataset_Augmentation.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+<td></td>
+</tr>
+<tr>
+<td>SST <code>Dataset</code></td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/07_Seq2Seq/SST_Redo/SST_Dataset.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/07_Seq2Seq/SST_Redo/SST_Dataset.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+<td></td>
+</tr>
+<tr>
+<td>SST Model</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/07_Seq2Seq/SST_Redo/SSTModel.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/07_Seq2Seq/SST_Redo/SSTModel.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+<td><a href="https://tensorboard.dev/experiment/h1GB1XeEQQKDGqTgXqVJgw/#scalars"><img src="https://img.shields.io/badge/logs-tensorboard-orange?logo=Tensorflow"></a></td>
+</tr>
+</tbody>
+</table><h3 id="dataset-preparation">Dataset Preparation</h3>
+<p>These are the following files that we will use in the Actual SST Dataset</p>
+<ol>
+<li><code>sentiment_labels.txt</code>: contains the <code>phrase_ids</code> and its respective <code>sentiment_values</code> which are in the range <code>[0,1]</code></li>
+<li><code>datasetSentences.txt</code>: contains the sentences, and theirs ids, this in itself is not useful, because we dont have the label for the sentences</li>
+<li><code>dictionary.txt</code>: contains the <code>phrases</code> and its <code>phrase_ids</code></li>
+</ol>
+<p>So how do you get the label for the sentence?</p>
+<p>you simply do <code>sentence</code> == <code>phrase</code> and map the sentences to phrase, so you know which sentence is which phrase, and then you will get the corresponding <code>phrase_id</code> and then you can use this to get the <code>label</code></p>
+<p>Read the labels file</p>
+<pre class=" language-python"><code class="prism  language-python">sentiment_labels <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span>os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>sst_dir<span class="token punctuation">,</span>  <span class="token string">"sentiment_labels.txt"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> names<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'phrase_ids'</span><span class="token punctuation">,</span>  <span class="token string">'sentiment_values'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> sep<span class="token operator">=</span><span class="token string">"|"</span><span class="token punctuation">,</span> header<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Discretize the labels to integers</p>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">def</span> <span class="token function">discretize_label</span><span class="token punctuation">(</span>label<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> label <span class="token operator">&lt;=</span> <span class="token number">0.2</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">0</span>
+    <span class="token keyword">if</span> label <span class="token operator">&lt;=</span> <span class="token number">0.4</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">1</span>
+    <span class="token keyword">if</span> label <span class="token operator">&lt;=</span> <span class="token number">0.6</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">2</span>
+    <span class="token keyword">if</span> label <span class="token operator">&lt;=</span> <span class="token number">0.8</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">3</span>
+    <span class="token keyword">return</span> <span class="token number">4</span>
+</code></pre>
+<pre class=" language-python"><code class="prism  language-python">sentiment_labels<span class="token punctuation">[</span><span class="token string">'sentiment_values'</span><span class="token punctuation">]</span> <span class="token operator">=</span> sentiment_labels<span class="token punctuation">[</span><span class="token string">'sentiment_values'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">apply</span><span class="token punctuation">(</span>discretize_label<span class="token punctuation">)</span>
+</code></pre>
+<p>Read the Sentences file</p>
+<pre class=" language-python"><code class="prism  language-python">sentence_ids <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span>os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>sst_dir<span class="token punctuation">,</span>  <span class="token string">"datasetSentences.txt"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sep<span class="token operator">=</span><span class="token string">"\t"</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Read the phrase id to phrase mapping file</p>
+<pre class=" language-python"><code class="prism  language-python">dictionary <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span>os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>sst_dir<span class="token punctuation">,</span>  <span class="token string">"dictionary.txt"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sep<span class="token operator">=</span><span class="token string">"|"</span><span class="token punctuation">,</span> names<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'phrase'</span><span class="token punctuation">,</span>  <span class="token string">'phrase_ids'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Read the train-test-dev split file</p>
+<pre class=" language-python"><code class="prism  language-python">train_test_split <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span>os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>sst_dir<span class="token punctuation">,</span>  <span class="token string">"datasetSplit.txt"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<p>This is important, there is where we are merging the dataframe !</p>
+<pre class=" language-python"><code class="prism  language-python">sentence_phrase_merge <span class="token operator">=</span> pd<span class="token punctuation">.</span>merge<span class="token punctuation">(</span>sentence_ids<span class="token punctuation">,</span> dictionary<span class="token punctuation">,</span> left_on<span class="token operator">=</span><span class="token string">'sentence'</span><span class="token punctuation">,</span> right_on<span class="token operator">=</span><span class="token string">'phrase'</span><span class="token punctuation">)</span>
+sentence_phrase_split <span class="token operator">=</span> pd<span class="token punctuation">.</span>merge<span class="token punctuation">(</span>sentence_phrase_merge<span class="token punctuation">,</span> train_test_split<span class="token punctuation">,</span> on<span class="token operator">=</span><span class="token string">'sentence_index'</span><span class="token punctuation">)</span>
+dataset <span class="token operator">=</span> pd<span class="token punctuation">.</span>merge<span class="token punctuation">(</span>sentence_phrase_split<span class="token punctuation">,</span> sentiment_labels<span class="token punctuation">,</span> on<span class="token operator">=</span><span class="token string">'phrase_ids'</span><span class="token punctuation">)</span>
+</code></pre>
+<p>This is some cleaning to remove non-useful characters from the data</p>
+<pre class=" language-python"><code class="prism  language-python">dataset<span class="token punctuation">[</span><span class="token string">'phrase_cleaned'</span><span class="token punctuation">]</span> <span class="token operator">=</span> dataset<span class="token punctuation">[</span><span class="token string">'sentence'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">str</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span>r<span class="token string">"\s('s|'d|'re|'ll|'m|'ve|n't)\b"</span><span class="token punctuation">,</span>  <span class="token keyword">lambda</span> m<span class="token punctuation">:</span> m<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+</code></pre>
+<p>This is how the dataframe looks like:</p>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/07_Seq2Seq/assets/sst_df.png?raw=true" alt="enter image description here"></p>
+<p>And then we save this <code>DataFrame</code> and later simply read this file in our <code>Dataset</code> Class</p>
+<p>Here is the PyTorch style <code>Dataset</code></p>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">class</span> <span class="token class-name">StanfordSentimentTreeBank</span><span class="token punctuation">(</span>Dataset<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""The Standford Sentiment Tree Bank Dataset
+    Stanford Sentiment Treebank V1.0
+    """</span>
+
+    ORIG_URL <span class="token operator">=</span> <span class="token string">"http://nlp.stanford.edu/~socherr/stanfordSentimentTreebank.zip"</span>
+    DATASET_NAME <span class="token operator">=</span> <span class="token string">"StanfordSentimentTreeBank"</span>
+    URL <span class="token operator">=</span> <span class="token string">'https://drive.google.com/uc?id=1urNi0Rtp9XkvkxxeKytjl1WoYNYUEoPI'</span>
+    OUTPUT <span class="token operator">=</span> <span class="token string">'sst_dataset.zip'</span>
+ 
+
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> root<span class="token punctuation">,</span> vocab<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> text_transforms<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> label_transforms<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> split<span class="token operator">=</span><span class="token string">'train'</span><span class="token punctuation">,</span> ngrams<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> use_transformed_dataset<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">"""Initiate text-classification dataset.
+        Args:
+            data: a list of label and text tring tuple. label is an integer.
+                [(label1, text1), (label2, text2), (label2, text3)]
+            vocab: Vocabulary object used for dataset.
+            transforms: a tuple of label and text string transforms.
+        """</span>
+
+        <span class="token builtin">super</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>__class__<span class="token punctuation">,</span> self<span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> split <span class="token operator">not</span> <span class="token keyword">in</span> <span class="token punctuation">[</span><span class="token string">'train'</span><span class="token punctuation">,</span> <span class="token string">'test'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+            <span class="token keyword">raise</span> ValueError<span class="token punctuation">(</span>f<span class="token string">'split must be either ["train", "test"] unknown split {split}'</span><span class="token punctuation">)</span>
+
+        self<span class="token punctuation">.</span>vocab <span class="token operator">=</span> vocab
+
+        gdown<span class="token punctuation">.</span>cached_download<span class="token punctuation">(</span>self<span class="token punctuation">.</span>URL<span class="token punctuation">,</span> Path<span class="token punctuation">(</span>root<span class="token punctuation">)</span> <span class="token operator">/</span> self<span class="token punctuation">.</span>OUTPUT<span class="token punctuation">)</span>
+
+        self<span class="token punctuation">.</span>generate_sst_dataset<span class="token punctuation">(</span>split<span class="token punctuation">,</span> Path<span class="token punctuation">(</span>root<span class="token punctuation">)</span> <span class="token operator">/</span> self<span class="token punctuation">.</span>OUTPUT<span class="token punctuation">)</span>
+
+        tokenizer <span class="token operator">=</span> get_tokenizer<span class="token punctuation">(</span><span class="token string">"basic_english"</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># the text transform can only work at the sentence level</span>
+        <span class="token comment"># the rest of tokenization and vocab is done by this class</span>
+        self<span class="token punctuation">.</span>text_transform <span class="token operator">=</span> sequential_transforms<span class="token punctuation">(</span>tokenizer<span class="token punctuation">,</span> text_f<span class="token punctuation">.</span>ngrams_func<span class="token punctuation">(</span>ngrams<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">def</span> <span class="token function">build_vocab</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> transforms<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">def</span> <span class="token function">apply_transforms</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                <span class="token keyword">for</span> line <span class="token keyword">in</span> data<span class="token punctuation">:</span>
+                    <span class="token keyword">yield</span> transforms<span class="token punctuation">(</span>line<span class="token punctuation">)</span>
+            <span class="token keyword">return</span> build_vocab_from_iterator<span class="token punctuation">(</span>apply_transforms<span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token builtin">len</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>vocab <span class="token keyword">is</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+            <span class="token comment"># vocab is always built on the train dataset</span>
+            self<span class="token punctuation">.</span>vocab <span class="token operator">=</span> build_vocab<span class="token punctuation">(</span>self<span class="token punctuation">.</span>dataset_train<span class="token punctuation">[</span><span class="token string">"phrase"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> self<span class="token punctuation">.</span>text_transform<span class="token punctuation">)</span>
+
+
+        <span class="token keyword">if</span> text_transforms <span class="token keyword">is</span> <span class="token operator">not</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>text_transform <span class="token operator">=</span> sequential_transforms<span class="token punctuation">(</span>
+                self<span class="token punctuation">.</span>text_transform<span class="token punctuation">,</span> text_transforms<span class="token punctuation">,</span> text_f<span class="token punctuation">.</span>vocab_func<span class="token punctuation">(</span>self<span class="token punctuation">.</span>vocab<span class="token punctuation">)</span><span class="token punctuation">,</span> text_f<span class="token punctuation">.</span>totensor<span class="token punctuation">(</span>dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">long</span><span class="token punctuation">)</span>
+            <span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>text_transform <span class="token operator">=</span> sequential_transforms<span class="token punctuation">(</span>
+                self<span class="token punctuation">.</span>text_transform<span class="token punctuation">,</span> text_f<span class="token punctuation">.</span>vocab_func<span class="token punctuation">(</span>self<span class="token punctuation">.</span>vocab<span class="token punctuation">)</span><span class="token punctuation">,</span> text_f<span class="token punctuation">.</span>totensor<span class="token punctuation">(</span>dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">long</span><span class="token punctuation">)</span>
+            <span class="token punctuation">)</span>
+
+        self<span class="token punctuation">.</span>label_transform <span class="token operator">=</span> sequential_transforms<span class="token punctuation">(</span>text_f<span class="token punctuation">.</span>totensor<span class="token punctuation">(</span>dtype<span class="token operator">=</span>torch<span class="token punctuation">.</span><span class="token builtin">long</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">generate_sst_dataset</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> split<span class="token punctuation">,</span> dataset_file<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+        <span class="token keyword">with</span> ZipFile<span class="token punctuation">(</span>dataset_file<span class="token punctuation">)</span> <span class="token keyword">as</span> datasetzip<span class="token punctuation">:</span>
+            <span class="token keyword">with</span> datasetzip<span class="token punctuation">.</span><span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">'sst_dataset/sst_dataset_augmented.csv'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+                dataset <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span>f<span class="token punctuation">,</span> index_col<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">)</span>
+
+        self<span class="token punctuation">.</span>dataset_orig <span class="token operator">=</span> dataset<span class="token punctuation">.</span>copy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+        dataset_train_raw <span class="token operator">=</span> dataset<span class="token punctuation">[</span>dataset<span class="token punctuation">[</span><span class="token string">'splitset_label'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>isin<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+        self<span class="token punctuation">.</span>dataset_train <span class="token operator">=</span> pd<span class="token punctuation">.</span>concat<span class="token punctuation">(</span><span class="token punctuation">[</span>
+                dataset_train_raw<span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">'phrase_cleaned'</span><span class="token punctuation">,</span> <span class="token string">'sentiment_values'</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">.</span>rename<span class="token punctuation">(</span>columns<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">"phrase_cleaned"</span><span class="token punctuation">:</span> <span class="token string">'phrase'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                dataset_train_raw<span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">'synonym_sentences'</span><span class="token punctuation">,</span> <span class="token string">'sentiment_values'</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">.</span>rename<span class="token punctuation">(</span>columns<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">"synonym_sentences"</span><span class="token punctuation">:</span> <span class="token string">'phrase'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                dataset_train_raw<span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">'backtranslated'</span><span class="token punctuation">,</span> <span class="token string">'sentiment_values'</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">.</span>rename<span class="token punctuation">(</span>columns<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">"backtranslated"</span><span class="token punctuation">:</span> <span class="token string">'phrase'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">]</span><span class="token punctuation">,</span> ignore_index<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> split <span class="token operator">==</span> <span class="token string">'train'</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>dataset <span class="token operator">=</span> self<span class="token punctuation">.</span>dataset_train<span class="token punctuation">.</span>copy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>dataset <span class="token operator">=</span> dataset<span class="token punctuation">[</span>dataset<span class="token punctuation">[</span><span class="token string">'splitset_label'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>isin<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">]</span> \
+                                    <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">'phrase_cleaned'</span><span class="token punctuation">,</span> <span class="token string">'sentiment_values'</span><span class="token punctuation">]</span><span class="token punctuation">]</span> \
+                                    <span class="token punctuation">.</span>rename<span class="token punctuation">(</span>columns<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">"phrase_cleaned"</span><span class="token punctuation">:</span> <span class="token string">'phrase'</span><span class="token punctuation">}</span><span class="token punctuation">)</span> \
+                                    <span class="token punctuation">.</span>reset_index<span class="token punctuation">(</span>drop<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+    @<span class="token builtin">staticmethod</span>
+    <span class="token keyword">def</span> <span class="token function">discretize_label</span><span class="token punctuation">(</span>label<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> label <span class="token operator">&lt;=</span> <span class="token number">0.2</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">0</span>
+        <span class="token keyword">if</span> label <span class="token operator">&lt;=</span> <span class="token number">0.4</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">1</span>
+        <span class="token keyword">if</span> label <span class="token operator">&lt;=</span> <span class="token number">0.6</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">2</span>
+        <span class="token keyword">if</span> label <span class="token operator">&lt;=</span> <span class="token number">0.8</span><span class="token punctuation">:</span> <span class="token keyword">return</span> <span class="token number">3</span>
+        <span class="token keyword">return</span> <span class="token number">4</span>
+
+    <span class="token keyword">def</span> <span class="token function">__getitem__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> idx<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># print(f'text: {self.dataset["sentence"].iloc[idx]}, label: {self.dataset["sentiment_values"].iloc[idx]}')</span>
+        text <span class="token operator">=</span> self<span class="token punctuation">.</span>text_transform<span class="token punctuation">(</span>self<span class="token punctuation">.</span>dataset<span class="token punctuation">[</span><span class="token string">'phrase'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>iloc<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        label <span class="token operator">=</span> self<span class="token punctuation">.</span>label_transform<span class="token punctuation">(</span>self<span class="token punctuation">.</span>dataset<span class="token punctuation">[</span><span class="token string">'sentiment_values'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>iloc<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        <span class="token comment"># print(f't_text: {text} {text.shape}, t_label: {label}')</span>
+        <span class="token keyword">return</span> label<span class="token punctuation">,</span> text 
+
+    <span class="token keyword">def</span> <span class="token function">__len__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> <span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>dataset<span class="token punctuation">)</span>
+
+    @<span class="token builtin">staticmethod</span>
+    <span class="token keyword">def</span> <span class="token function">get_labels</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token string">'very negative'</span><span class="token punctuation">,</span> <span class="token string">'negative'</span><span class="token punctuation">,</span> <span class="token string">'neutral'</span><span class="token punctuation">,</span> <span class="token string">'positive'</span><span class="token punctuation">,</span> <span class="token string">'very positive'</span><span class="token punctuation">]</span>
+
+    <span class="token keyword">def</span> <span class="token function">get_vocab</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>vocab
+
+    @<span class="token builtin">property</span>
+    <span class="token keyword">def</span> <span class="token function">collator_fn</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">def</span> <span class="token function">collate_fn</span><span class="token punctuation">(</span>batch<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            pad_idx <span class="token operator">=</span> self<span class="token punctuation">.</span>get_vocab<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string">'&lt;pad&gt;'</span><span class="token punctuation">]</span>
+            labels<span class="token punctuation">,</span> sequences <span class="token operator">=</span> <span class="token builtin">zip</span><span class="token punctuation">(</span><span class="token operator">*</span>batch<span class="token punctuation">)</span>
+            labels <span class="token operator">=</span> torch<span class="token punctuation">.</span>stack<span class="token punctuation">(</span>labels<span class="token punctuation">)</span>
+            lengths <span class="token operator">=</span> torch<span class="token punctuation">.</span>LongTensor<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token builtin">len</span><span class="token punctuation">(</span>sequence<span class="token punctuation">)</span> <span class="token keyword">for</span> sequence <span class="token keyword">in</span> sequences<span class="token punctuation">]</span><span class="token punctuation">)</span>
+            sequences <span class="token operator">=</span> torch<span class="token punctuation">.</span>nn<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>rnn<span class="token punctuation">.</span>pad_sequence<span class="token punctuation">(</span>sequences<span class="token punctuation">,</span> 
+                                                        padding_value <span class="token operator">=</span> pad_idx<span class="token punctuation">,</span>
+                                                        batch_first<span class="token operator">=</span><span class="token boolean">True</span> 
+            <span class="token keyword">return</span> labels<span class="token punctuation">,</span> sequences<span class="token punctuation">,</span> lengths
+        <span class="token keyword">return</span> collate_fn
+</code></pre>
+<h2 id="training-log">Training Log</h2>
+<p>Tensorboard: <a href="https://tensorboard.dev/experiment/h1GB1XeEQQKDGqTgXqVJgw/#scalars">https://tensorboard.dev/experiment/h1GB1XeEQQKDGqTgXqVJgw/#scalars</a></p>
+<pre><code>Best Test Acc: 29.99%
+Params: 2.3M
+Augmentations: NONE
+Pretrained Embedding: NONE
+</code></pre>
+<p>Log</p>
+<pre><code>Epoch: 0, Test Acc: 0.2280784547328949, Test Loss: 1.4922568798065186
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.95it/s]
+Epoch: 1, Test Acc: 0.2326740324497223, Test Loss: 1.4437384605407715
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.74it/s]
+Epoch: 2, Test Acc: 0.23666085302829742, Test Loss: 1.422459363937378
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.58it/s]
+Epoch: 3, Test Acc: 0.24293950200080872, Test Loss: 1.404987096786499
+Validating: 100%
+17/17 [00:00&lt;00:00, 12.02it/s]
+Epoch: 4, Test Acc: 0.249832883477211, Test Loss: 1.395544171333313
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.71it/s]
+Epoch: 5, Test Acc: 0.2535093426704407, Test Loss: 1.3994262218475342
+Validating: 100%
+17/17 [00:00&lt;00:00, 12.09it/s]
+Epoch: 6, Test Acc: 0.2584153115749359, Test Loss: 1.4065455198287964
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.73it/s]
+Epoch: 7, Test Acc: 0.2509012222290039, Test Loss: 1.3632327318191528
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.47it/s]
+Epoch: 8, Test Acc: 0.2657622694969177, Test Loss: 1.382830262184143
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.22it/s]
+Epoch: 9, Test Acc: 0.2766365110874176, Test Loss: 1.3973437547683716
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.86it/s]
+Epoch: 10, Test Acc: 0.2795490324497223, Test Loss: 1.5025354623794556
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.16it/s]
+Epoch: 11, Test Acc: 0.29301947355270386, Test Loss: 1.3790276050567627
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.44it/s]
+Epoch: 12, Test Acc: 0.2876599431037903, Test Loss: 1.445764422416687
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.36it/s]
+Epoch: 13, Test Acc: 0.2718857526779175, Test Loss: 1.649567723274231
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.76it/s]
+Epoch: 14, Test Acc: 0.2856665253639221, Test Loss: 1.7272247076034546
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.58it/s]
+Epoch: 15, Test Acc: 0.29959654808044434, Test Loss: 1.6855326890945435
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.71it/s]
+Epoch: 16, Test Acc: 0.2838282883167267, Test Loss: 1.9708813428878784
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.56it/s]
+Epoch: 17, Test Acc: 0.2920944094657898, Test Loss: 1.9789706468582153
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.09it/s]
+Epoch: 18, Test Acc: 0.28826871514320374, Test Loss: 2.264657735824585
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.83it/s]
+Epoch: 19, Test Acc: 0.28964143991470337, Test Loss: 2.3266751766204834
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.66it/s]
+Epoch: 20, Test Acc: 0.29592007398605347, Test Loss: 2.2889909744262695
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.52it/s]
+Epoch: 21, Test Acc: 0.2861260771751404, Test Loss: 2.5443098545074463
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.39it/s]
+Epoch: 22, Test Acc: 0.2858157455921173, Test Loss: 2.618633985519409
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.77it/s]
+Epoch: 23, Test Acc: 0.29700031876564026, Test Loss: 2.751962900161743
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.56it/s]
+Epoch: 24, Test Acc: 0.29087090492248535, Test Loss: 2.886303663253784
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.03it/s]
+Epoch: 25, Test Acc: 0.2911752760410309, Test Loss: 2.913256883621216
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.93it/s]
+Epoch: 26, Test Acc: 0.28995177149772644, Test Loss: 3.2125508785247803
+Validating: 100%
+17/17 [00:00&lt;00:00, 9.87it/s]
+Epoch: 27, Test Acc: 0.28367310762405396, Test Loss: 3.3605377674102783
+Validating: 100%
+17/17 [00:00&lt;00:00, 11.05it/s]
+Epoch: 28, Test Acc: 0.2810649871826172, Test Loss: 3.2784640789031982
+Validating: 100%
+17/17 [00:00&lt;00:00, 10.42it/s]
+Epoch: 29, Test Acc: 0.28428784012794495, Test Loss: 3.468895435333252
+</code></pre>
+<h2 id="sample-output">Sample Output</h2>
+<pre><code>sentence:  Effective but too - tepid biopic
+label: neutral, predicted: neutral
+
+
+sentence:  The film provides some great insight into the neurotic mindset of all comics -- even those who have reached the absolute top of the game .
+label: neutral, predicted: neutral
+
+
+sentence:  Perhaps no picture ever made has more literally &lt;unk&gt; that the road to hell is paved with good intentions .
+label: positive, predicted: positive
+
+
+sentence:  Steers turns in a snappy screenplay that &lt;unk&gt; at the edges ; it 's so clever you want to hate it .
+label: positive, predicted: positive
+
+
+sentence:  This is a film well worth seeing , talking and singing heads and all .
+label: very positive, predicted: very positive
+
+
+sentence:  What really surprises about Wisegirls is its low - key quality and genuine tenderness .
+label: positive, predicted: positive
+
+
+sentence:  One of the greatest family - oriented , fantasy - adventure movies ever .
+label: very positive, predicted: very positive
+
+
+sentence:  Ultimately , it &lt;unk&gt; the reasons we need stories so much .
+label: neutral, predicted: neutral
+
+
+sentence:  An utterly compelling ` who wrote it ' in which the reputation of the most famous author who ever lived comes into question .
+label: positive, predicted: positive
+
+
+sentence:  A masterpiece four years in the making .
+label: very positive, predicted: very positive
+
+</code></pre>
+</div>
+</body>
+
+</html>
