@@ -54,3 +54,9 @@ NOTE: There might be dependencies issues with torchtext version used in the note
     Simple Sequence-to-Sequence Model for Question Answer and Similar Question Generation
 
     Also includes a redo of `5` without any augmentation. [05 Redo](07_Seq2Seq/07_SST_Redo.html)
+
+8. [TorchText](08_TorchText/index.html)
+
+    Introduction to the new TorchText APIs, and deprecation of `torchtext.legacy`
+
+    Here we convert few notebooks with legacy code to the modern torchtext `0.9.0+`

@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>08_TorchText</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="torchtext">08 TorchText</h1>
+<h2 id="assignment">Assignment</h2>
+<p>Refer to this  <a href="https://github.com/bentrevett/pytorch-seq2seq">Repo (Links to an external site.)</a>.</p>
+<ol>
+<li>You are going to refactor this repo in the next 3 sessions. In the current assignment, change the 2 and 3 (optional 4, 500 additional points) such that
+<ol>
+<li>is uses none of the legacy stuff</li>
+<li>It MUST use Multi30k dataset from torchtext</li>
+<li>uses yield_token, and other code that we wrote</li>
+</ol>
+</li>
+<li>Once done, proceed to answer questions in the Assignment-Submission Page.</li>
+</ol>
+<h2 id="solution">Solution</h2>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>NBViewer</th>
+<th>Google Colab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 - Sequence to Sequence Learning with Neural Networks</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/08_TorchText/pytorch-seq2seq-modern/1_Sequence_to_Sequence_Learning_with_Neural_Networks.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/08_TorchText/pytorch-seq2seq-modern/1_Sequence_to_Sequence_Learning_with_Neural_Networks.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+</tr>
+<tr>
+<td>2 - Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/08_TorchText/pytorch-seq2seq-modern/2_Learning_Phrase_Representations_using_RNN_Encoder_Decoder_for_Statistical_Machine_Translation.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/08_TorchText/pytorch-seq2seq-modern/2_Learning_Phrase_Representations_using_RNN_Encoder_Decoder_for_Statistical_Machine_Translation.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+</tr>
+<tr>
+<td>3 - Neural Machine Translation by Jointly Learning to Align and Translate</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/08_TorchText/pytorch-seq2seq-modern/3_Neural_Machine_Translation_by_Jointly_Learning_to_Align_and_Translate.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/08_TorchText/pytorch-seq2seq-modern/3_Neural_Machine_Translation_by_Jointly_Learning_to_Align_and_Translate.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+</tr>
+<tr>
+<td>4 - Packed Padded Sequences, Masking, Inference and BLEU</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/08_TorchText/pytorch-seq2seq-modern/4_Packed_Padded_Sequences%2C_Masking%2C_Inference_and_BLEU.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/08_TorchText/pytorch-seq2seq-modern/4_Packed_Padded_Sequences%2C_Masking%2C_Inference_and_BLEU.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+</tr>
+</tbody>
+</table><h2 id="the-new-api">The New API</h2>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">from</span> torchtext<span class="token punctuation">.</span>data<span class="token punctuation">.</span>utils <span class="token keyword">import</span> get_tokenizer
+<span class="token keyword">from</span> torchtext<span class="token punctuation">.</span>vocab <span class="token keyword">import</span> build_vocab_from_iterator
+<span class="token keyword">from</span> torchtext<span class="token punctuation">.</span>datasets <span class="token keyword">import</span> Multi30k
+</code></pre>
+<p>Note that there are more api’s coming up in <code>torchtext.experimental</code> which will be released soon in <code>0.11.0</code> and <code>0.12.0</code>, hopefully with good documentation :) and i’ll be a part of creating that documentation 😁</p>
+<ol>
+<li>This is how tokenizers are instantiated now</li>
+</ol>
+<pre class=" language-python"><code class="prism  language-python">token_transform<span class="token punctuation">[</span>SRC_LANGUAGE<span class="token punctuation">]</span> <span class="token operator">=</span> get_tokenizer<span class="token punctuation">(</span><span class="token string">'spacy'</span><span class="token punctuation">,</span> language<span class="token operator">=</span><span class="token string">'de_core_news_sm'</span><span class="token punctuation">)</span>
+token_transform<span class="token punctuation">[</span>TGT_LANGUAGE<span class="token punctuation">]</span> <span class="token operator">=</span> get_tokenizer<span class="token punctuation">(</span><span class="token string">'spacy'</span><span class="token punctuation">,</span> language<span class="token operator">=</span><span class="token string">'en_core_web_sm'</span><span class="token punctuation">)</span>
+</code></pre>
+<ol start="2">
+<li>Loading the dataset</li>
+</ol>
+<pre class=" language-python"><code class="prism  language-python"><span class="token comment"># Training, Validation and Test data Iterator</span>
+train_iter<span class="token punctuation">,</span> val_iter<span class="token punctuation">,</span> test_iter <span class="token operator">=</span> Multi30k<span class="token punctuation">(</span>split<span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">'train'</span><span class="token punctuation">,</span> <span class="token string">'valid'</span><span class="token punctuation">,</span> <span class="token string">'test'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> language_pair<span class="token operator">=</span><span class="token punctuation">(</span>SRC_LANGUAGE<span class="token punctuation">,</span> TGT_LANGUAGE<span class="token punctuation">)</span><span class="token punctuation">)</span>
+train_list<span class="token punctuation">,</span> val_list<span class="token punctuation">,</span> test_list <span class="token operator">=</span> <span class="token builtin">list</span><span class="token punctuation">(</span>train_iter<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token builtin">list</span><span class="token punctuation">(</span>val_iter<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token builtin">list</span><span class="token punctuation">(</span>test_iter<span class="token punctuation">)</span>
+</code></pre>
+<p>A thing to note here is that <code>list(iter)</code> will be costly for large dataset, so its preferable to keep it as an <code>iter</code> and make a <code>Dataloader</code> out of it and use the <code>Dataloader</code> for whatever you want to do, because once the iterator is exhausted, you’ll need to call the <code>Multi30k</code> function again to make the iter, which seems kind of waste of cpu cycles.</p>
+<ol start="3">
+<li>Creating the <code>Vocab</code></li>
+</ol>
+<pre class=" language-python"><code class="prism  language-python"><span class="token comment"># helper function to yield list of tokens</span>
+<span class="token keyword">def</span> <span class="token function">yield_tokens</span><span class="token punctuation">(</span>data_iter<span class="token punctuation">:</span> Iterable<span class="token punctuation">,</span> language<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> List<span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+    language_index <span class="token operator">=</span> <span class="token punctuation">{</span>SRC_LANGUAGE<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span> TGT_LANGUAGE<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span>
+
+    <span class="token keyword">for</span> data_sample <span class="token keyword">in</span> data_iter<span class="token punctuation">:</span>
+        <span class="token keyword">yield</span> token_transform<span class="token punctuation">[</span>language<span class="token punctuation">]</span><span class="token punctuation">(</span>data_sample<span class="token punctuation">[</span>language_index<span class="token punctuation">[</span>language<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Define special symbols and indices</span>
+UNK_IDX<span class="token punctuation">,</span> PAD_IDX<span class="token punctuation">,</span> BOS_IDX<span class="token punctuation">,</span> EOS_IDX <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span>
+<span class="token comment"># Make sure the tokens are in order of their indices to properly insert them in vocab</span>
+special_symbols <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'&lt;unk&gt;'</span><span class="token punctuation">,</span> <span class="token string">'&lt;pad&gt;'</span><span class="token punctuation">,</span> <span class="token string">'&lt;bos&gt;'</span><span class="token punctuation">,</span> <span class="token string">'&lt;eos&gt;'</span><span class="token punctuation">]</span>
+
+<span class="token keyword">for</span> ln <span class="token keyword">in</span> <span class="token punctuation">[</span>SRC_LANGUAGE<span class="token punctuation">,</span> TGT_LANGUAGE<span class="token punctuation">]</span><span class="token punctuation">:</span>
+    <span class="token comment"># Create torchtext's Vocab object</span>
+    vocab_transform<span class="token punctuation">[</span>ln<span class="token punctuation">]</span> <span class="token operator">=</span> build_vocab_from_iterator<span class="token punctuation">(</span>yield_tokens<span class="token punctuation">(</span>train_list<span class="token punctuation">,</span> ln<span class="token punctuation">)</span><span class="token punctuation">,</span>
+                                                    min_freq<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span>
+                                                    specials<span class="token operator">=</span>special_symbols<span class="token punctuation">,</span>
+                                                    special_first<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Set UNK_IDX as the default index. This index is returned when the token is not found.</span>
+<span class="token comment"># If not set, it throws RuntimeError when the queried token is not found in the Vocabulary.</span>
+<span class="token keyword">for</span> ln <span class="token keyword">in</span> <span class="token punctuation">[</span>SRC_LANGUAGE<span class="token punctuation">,</span> TGT_LANGUAGE<span class="token punctuation">]</span><span class="token punctuation">:</span>
+  vocab_transform<span class="token punctuation">[</span>ln<span class="token punctuation">]</span><span class="token punctuation">.</span>set_default_index<span class="token punctuation">(</span>UNK_IDX<span class="token punctuation">)</span>
+</code></pre>
+<ol start="4">
+<li>Creating the transforms and <code>collate_fn</code></li>
+</ol>
+<pre class=" language-python"><code class="prism  language-python"><span class="token keyword">from</span> torch<span class="token punctuation">.</span>nn<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>rnn <span class="token keyword">import</span> pad_sequence
+
+<span class="token comment"># helper function to club together sequential operations</span>
+<span class="token keyword">def</span> <span class="token function">sequential_transforms</span><span class="token punctuation">(</span><span class="token operator">*</span>transforms<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">func</span><span class="token punctuation">(</span>txt_input<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> transform <span class="token keyword">in</span> transforms<span class="token punctuation">:</span>
+            txt_input <span class="token operator">=</span> transform<span class="token punctuation">(</span>txt_input<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> txt_input
+    <span class="token keyword">return</span> func
+
+<span class="token comment"># function to add BOS/EOS and create tensor for input sequence indices</span>
+<span class="token keyword">def</span> <span class="token function">tensor_transform</span><span class="token punctuation">(</span>token_ids<span class="token punctuation">:</span> List<span class="token punctuation">[</span><span class="token builtin">int</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> torch<span class="token punctuation">.</span>cat<span class="token punctuation">(</span><span class="token punctuation">(</span>torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span><span class="token punctuation">[</span>BOS_IDX<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> 
+                      torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span>token_ids<span class="token punctuation">)</span><span class="token punctuation">,</span> 
+                      torch<span class="token punctuation">.</span>tensor<span class="token punctuation">(</span><span class="token punctuation">[</span>EOS_IDX<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token comment"># src and tgt language text transforms to convert raw strings into tensors indices</span>
+text_transform <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token keyword">for</span> ln <span class="token keyword">in</span> <span class="token punctuation">[</span>SRC_LANGUAGE<span class="token punctuation">,</span> TGT_LANGUAGE<span class="token punctuation">]</span><span class="token punctuation">:</span>
+    text_transform<span class="token punctuation">[</span>ln<span class="token punctuation">]</span> <span class="token operator">=</span> sequential_transforms<span class="token punctuation">(</span>token_transform<span class="token punctuation">[</span>ln<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">#Tokenization</span>
+                                               vocab_transform<span class="token punctuation">[</span>ln<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">#Numericalization</span>
+                                               tensor_transform<span class="token punctuation">)</span> <span class="token comment"># Add BOS/EOS and create tensor</span>
+
+
+<span class="token comment"># function to collate data samples into batch tesors</span>
+<span class="token keyword">def</span> <span class="token function">collate_fn</span><span class="token punctuation">(</span>batch<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    src_batch<span class="token punctuation">,</span> src_len<span class="token punctuation">,</span> tgt_batch <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token keyword">for</span> src_sample<span class="token punctuation">,</span> tgt_sample <span class="token keyword">in</span> batch<span class="token punctuation">:</span>
+        src_batch<span class="token punctuation">.</span>append<span class="token punctuation">(</span>text_transform<span class="token punctuation">[</span>SRC_LANGUAGE<span class="token punctuation">]</span><span class="token punctuation">(</span>src_sample<span class="token punctuation">.</span>rstrip<span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        src_len<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>src_batch<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        tgt_batch<span class="token punctuation">.</span>append<span class="token punctuation">(</span>text_transform<span class="token punctuation">[</span>TGT_LANGUAGE<span class="token punctuation">]</span><span class="token punctuation">(</span>tgt_sample<span class="token punctuation">.</span>rstrip<span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    src_batch <span class="token operator">=</span> pad_sequence<span class="token punctuation">(</span>src_batch<span class="token punctuation">,</span> padding_value<span class="token operator">=</span>PAD_IDX<span class="token punctuation">)</span>
+    tgt_batch <span class="token operator">=</span> pad_sequence<span class="token punctuation">(</span>tgt_batch<span class="token punctuation">,</span> padding_value<span class="token operator">=</span>PAD_IDX<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> src_batch<span class="token punctuation">,</span> torch<span class="token punctuation">.</span>LongTensor<span class="token punctuation">(</span>src_len<span class="token punctuation">)</span><span class="token punctuation">,</span> tgt_batch
+</code></pre>
+<ol start="5">
+<li><code>Dataloader</code></li>
+</ol>
+<pre class=" language-python"><code class="prism  language-python">BATCH_SIZE <span class="token operator">=</span> <span class="token number">128</span>
+
+train_dataloader <span class="token operator">=</span> DataLoader<span class="token punctuation">(</span>train_list<span class="token punctuation">,</span> batch_size<span class="token operator">=</span>BATCH_SIZE<span class="token punctuation">,</span> collate_fn<span class="token operator">=</span>collate_fn<span class="token punctuation">)</span>
+val_dataloader <span class="token operator">=</span> DataLoader<span class="token punctuation">(</span>val_list<span class="token punctuation">,</span> batch_size<span class="token operator">=</span>BATCH_SIZE<span class="token punctuation">,</span> collate_fn<span class="token operator">=</span>collate_fn<span class="token punctuation">)</span>
+test_dataloader <span class="token operator">=</span> DataLoader<span class="token punctuation">(</span>test_list<span class="token punctuation">,</span> batch_size<span class="token operator">=</span>BATCH_SIZE<span class="token punctuation">,</span> collate_fn<span class="token operator">=</span>collate_fn<span class="token punctuation">)</span>
+</code></pre>
+<p>The main aim of the new API is to be consistent with <code>torch</code>, which uses a classical <code>Dataloader</code> object, and <code>torchtext</code> is moving towards it. UNIFY EVERYTHING <code>(╯°□°）╯︵ ┻━┻</code></p>
+<h2 id="notes">Notes</h2>
+<p><code>torchtext</code> is evolving a lott, consequently there has been a lot of breaking changes, and not much documentation on it sadly <code>(┬┬﹏┬┬)</code>, below are some of the official reference which use the new api</p>
+<ul>
+<li><a href="https://pytorch.org/tutorials/beginner/transformer_tutorial.html">transformer tutorial</a></li>
+<li><a href="https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html">seq2seq translation tutorial</a></li>
+<li><a href="https://pytorch.org/tutorials/beginner/translation_transformer.html">translation transformer</a></li>
+<li><a href="https://github.com/pytorch/text/blob/release/0.9/examples/legacy_tutorial/migration_tutorial.ipynb"><code>torchtext</code> legacy migration tutorial</a></li>
+</ul>
+<p>Apart from these there are some useful GitHub Issues that must be looked at. Some of them are my contributions <code>ψ(｀∇´)ψ</code></p>
+<ul>
+<li><a href="https://github.com/pytorch/text/issues/1350">build vocab from GloVe Embeddings</a></li>
+<li><a href="https://github.com/pytorch/text/issues/1349">update on package documentation</a></li>
+<li><a href="https://github.com/pytorch/text/issues/1323">how to use <code>Vector</code> with the new <code>torchtext</code> api</a></li>
+</ul>
+<hr>
+<center>
+What it feels like to transition from `torchtext.legacy` to `torchtext`
+<iframe src="https://giphy.com/embed/1gdkNV0hroZjOXSHOU" width="480" height="350" class="giphy-embed" allowfullscreen=""></iframe><p><a href="https://giphy.com/gifs/boomerangtoons-mad-upset-1gdkNV0hroZjOXSHOU"></a></p>
+</center>
+</div>
+</body>
+
+</html>
