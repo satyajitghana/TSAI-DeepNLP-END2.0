@@ -60,3 +60,9 @@ NOTE: There might be dependencies issues with torchtext version used in the note
     Introduction to the new TorchText APIs, and deprecation of `torchtext.legacy`
 
     Here we convert few notebooks with legacy code to the modern torchtext `0.9.0+`
+
+9. [NLP Evaluation Metrics](09_NLP_Evaluation/index.html)
+
+    Classification Metrics: F1, Precision, Recall, Confusion Matrix
+
+    Machine Translation Metrics: Perplexity, BLEU, BERTScore
