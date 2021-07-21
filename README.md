@@ -66,3 +66,7 @@ NOTE: There might be dependencies issues with torchtext version used in the note
     Classification Metrics: F1, Precision, Recall, Confusion Matrix
 
     Machine Translation Metrics: Perplexity, BLEU, BERTScore
+
+10. [Seq2Seq w/ Attention](10_Seq2Seq_Attention/index.html)
+
+    Here we modified the Seq2Seq model to use attention mechanism.
