@@ -70,3 +70,8 @@ NOTE: There might be dependencies issues with torchtext version used in the note
 10. [Seq2Seq w/ Attention](10_Seq2Seq_Attention/index.html)
 
     Here we modified the Seq2Seq model to use attention mechanism.
+
+11. [Attention Advanced](11_Attention_Advanced/index.html)
+
+    Turns out there are a lot of things to learn about attention mechanism.
+    There's the Bahdanau et al. paper, and the Luong et al. paper. In this assignment we implement a version of the Luong general attention model.
