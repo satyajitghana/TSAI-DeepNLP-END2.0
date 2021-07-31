@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>13_AIAYN_Recap</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="aiayn-recap">13 AIAYN Recap</h1>
+<h2 id="assignment">Assignment</h2>
+<p>This  <a href="https://colab.research.google.com/github/bentrevett/pytorch-seq2seq/blob/master/6%20-%20Attention%20is%20All%20You%20Need.ipynb#scrollTo=FqXbPB80r8p4">code (Links to an external site.)</a>is from the same repo that we were following.</p>
+<p>Your assignment is to remove all the legacy stuff from this and submit:</p>
+<ol>
+<li>Last 5 Training EPOCH logs</li>
+<li>Sample translation for 10 example</li>
+<li>Link to your repo</li>
+</ol>
+<h2 id="solution">Solution</h2>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>NBViewer</th>
+<th>Google Colab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Attention Is All You Need</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/13_AIAYN_Recap/Attention_is_All_You_Need_Modern.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/13_AIAYN_Recap/Attention_is_All_You_Need_Modern.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+</tr>
+</tbody>
+</table><p><strong>Logs</strong></p>
+<pre class=" language-text"><code class="prism  language-text">Epoch: 01 | Time: 0m 22s
+	Train Loss: 4.484 | Train PPL:  88.565
+	 Val. Loss: 3.308 |  Val. PPL:  27.322
+Epoch: 02 | Time: 0m 22s
+	Train Loss: 2.898 | Train PPL:  18.142
+	 Val. Loss: 2.602 |  Val. PPL:  13.485
+Epoch: 03 | Time: 0m 23s
+	Train Loss: 2.273 | Train PPL:   9.711
+	 Val. Loss: 2.297 |  Val. PPL:   9.944
+Epoch: 04 | Time: 0m 22s
+	Train Loss: 1.884 | Train PPL:   6.580
+	 Val. Loss: 2.146 |  Val. PPL:   8.555
+Epoch: 05 | Time: 0m 22s
+	Train Loss: 1.611 | Train PPL:   5.008
+	 Val. Loss: 2.080 |  Val. PPL:   8.005
+Epoch: 06 | Time: 0m 23s
+	Train Loss: 1.389 | Train PPL:   4.011
+	 Val. Loss: 2.052 |  Val. PPL:   7.781
+Epoch: 07 | Time: 0m 22s
+	Train Loss: 1.215 | Train PPL:   3.370
+	 Val. Loss: 2.058 |  Val. PPL:   7.831
+Epoch: 08 | Time: 0m 23s
+	Train Loss: 1.062 | Train PPL:   2.892
+	 Val. Loss: 2.083 |  Val. PPL:   8.030
+Epoch: 09 | Time: 0m 23s
+	Train Loss: 0.932 | Train PPL:   2.538
+	 Val. Loss: 2.092 |  Val. PPL:   8.103
+Epoch: 10 | Time: 0m 23s
+	Train Loss: 0.821 | Train PPL:   2.273
+	 Val. Loss: 2.103 |  Val. PPL:   8.195
+</code></pre>
+<p><strong>Sample Translations</strong></p>
+<p>Random Translations from Test Set</p>
+<pre class=" language-text"><code class="prism  language-text">src = 2 Blonde Mädchen sitzen auf einem Sims auf einem belebten Platz.
+pred = 2 blond - haired blond - haired lady sitting on a busy afternoon .
+trg = 2 blond girls are sitting on a ledge in a crowded plaza.
+
+src = Ein Mann beugt sich zur Seite und zieht etwas aus einer Tasche.
+pred = An alley about to fix a very spinning fixing something from a bull .
+trg = A man is leaning over and pulling something out of a bag.
+
+src = Eine Blondine hält mit einem Mann im Sand Händchen.
+pred = A very football player holding a turn to fall .
+trg = A blond holding hands with a guy in the sand.
+
+src = Der Teenager springt mit seinem Fahrrad über den Hügel.
+pred = The professional football player is jumping over his turn to fall .
+trg = The teen jumps the hill with his bicycle.
+
+src = Eine Gruppe von Leuten sitzt im Freien um einen kleinen, kurzen Tisch.
+pred = In a roller derby , a very eight , who is sitting around a little boy who is being pulled out .
+trg = A group of people sit outdoors around a small, short table.
+
+src = Menschen an der Seitenlinie bei einem Fußballspiel.
+pred = Runners competing in a race being moved .
+trg = People on the sideline of a soccer match.
+
+src = Eine Frau spielt im Park mit zwei kleinen Jungen.
+pred = A very lacrosse game is playing with two young boys in the mud .
+trg = A woman playing with two young boys at a park
+
+src = Eine Straße neben einem interessanten Ort mit vielen Säulen.
+pred = A very racing cart next to a dirt pipe .
+trg = A road next to an interesting place with lots of pillars.
+
+src = Der gelbe Hund trägt einen Stock übers Wasser.
+pred = The yellow bowling driver is carrying a bowling ball .
+trg = The yellow dog is carrying a stick by water.
+
+src = Eine Frau hält eine kleine weiße Statue.
+pred = Firefighters holding a white pipe
+trg = A woman is holding a small white statue.
+</code></pre>
+<p><strong>Attention Visualization</strong></p>
+<p>A Sample from Training Set</p>
+<pre class=" language-python"><code class="prism  language-python">src <span class="token operator">=</span> <span class="token string">'Eine Frau mit einer großen Geldbörse geht an einem Tor vorbei.'</span>
+trg <span class="token operator">=</span> <span class="token string">'A woman with a large purse is walking by a gate.'</span>
+
+predicted trg <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'Firefighters'</span><span class="token punctuation">,</span> <span class="token string">'with'</span><span class="token punctuation">,</span> <span class="token string">'a'</span><span class="token punctuation">,</span> <span class="token string">'large'</span><span class="token punctuation">,</span> <span class="token string">'bowl'</span><span class="token punctuation">,</span> <span class="token string">'walking'</span><span class="token punctuation">,</span> <span class="token string">'past'</span><span class="token punctuation">,</span> <span class="token string">'a'</span><span class="token punctuation">,</span> <span class="token string">'hose'</span><span class="token punctuation">,</span> <span class="token string">'.'</span><span class="token punctuation">,</span> <span class="token string">'&lt;eos&gt;'</span><span class="token punctuation">]</span>
+</code></pre>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/13_AIAYN_Recap/attns/attn_1.png?raw=true" alt="train set attn"></p>
+<hr>
+<p>A Sample from Validation Test</p>
+<pre class=" language-python"><code class="prism  language-python">src <span class="token operator">=</span> <span class="token string">'Ein brauner Hund rennt dem schwarzen Hund hinterher.'</span>
+trg <span class="token operator">=</span> <span class="token string">'A brown dog is running after the black dog.'</span>
+
+predicted trg <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'A'</span><span class="token punctuation">,</span> <span class="token string">'brown'</span><span class="token punctuation">,</span> <span class="token string">'race'</span><span class="token punctuation">,</span> <span class="token string">'is'</span><span class="token punctuation">,</span> <span class="token string">'running'</span><span class="token punctuation">,</span> <span class="token string">'after'</span><span class="token punctuation">,</span> <span class="token string">'a'</span><span class="token punctuation">,</span> <span class="token string">'black'</span><span class="token punctuation">,</span> <span class="token string">'softball'</span><span class="token punctuation">,</span> <span class="token string">'.'</span><span class="token punctuation">,</span> <span class="token string">'&lt;eos&gt;'</span><span class="token punctuation">]</span>
+</code></pre>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/13_AIAYN_Recap/attns/attn_2.png?raw=true" alt="validation set attn"></p>
+<hr>
+<p>A Sample from Test Set</p>
+<pre class=" language-python"><code class="prism  language-python">src <span class="token operator">=</span> <span class="token string">'Eine Mutter und ihr kleiner Sohn genießen einen schönen Tag im Freien.'</span>
+trg <span class="token operator">=</span> <span class="token string">'A mother and her young song enjoying a beautiful day outside.'</span>
+
+predicted trg <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'In'</span><span class="token punctuation">,</span> <span class="token string">'the'</span><span class="token punctuation">,</span> <span class="token string">'middle'</span><span class="token punctuation">,</span> <span class="token string">'and'</span><span class="token punctuation">,</span> <span class="token string">'a'</span><span class="token punctuation">,</span> <span class="token string">'small'</span><span class="token punctuation">,</span> <span class="token string">'race'</span><span class="token punctuation">,</span> <span class="token string">','</span><span class="token punctuation">,</span> <span class="token string">'enjoying'</span><span class="token punctuation">,</span> <span class="token string">'a'</span><span class="token punctuation">,</span> <span class="token string">'turn'</span><span class="token punctuation">,</span> <span class="token string">'from'</span><span class="token punctuation">,</span> <span class="token string">'the'</span><span class="token punctuation">,</span> <span class="token string">'dirt'</span><span class="token punctuation">,</span> <span class="token string">'course'</span><span class="token punctuation">,</span> <span class="token string">'.'</span><span class="token punctuation">,</span> <span class="token string">'&lt;eos&gt;'</span><span class="token punctuation">]</span>
+</code></pre>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/13_AIAYN_Recap/attns/attn_3.png?raw=true" alt="test set attn"></p>
+<hr>
+<p align="center">
+<iframe src="https://giphy.com/embed/tBxyh2hbwMiqc" width="344" height="480" class="giphy-embed" allowfullscreen=""></iframe></p><p><a href="https://giphy.com/gifs/funny-cat-gato-gatos-tBxyh2hbwMiqc"></a></p>
+
+<hr>
+<p align="center">
+satyajit 🐱<br>:wq
+</p>
+</div>
+</body>
+
+</html>

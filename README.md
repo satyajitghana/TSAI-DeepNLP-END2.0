@@ -79,3 +79,7 @@ NOTE: There might be dependencies issues with torchtext version used in the note
 12. [Attention Is All You Need](12_AttentionIsAllYouNeed/index.html)
 
     A Vanilla Implementation of AIAYN Paper (https://arxiv.org/abs/1706.03762)
+
+13. [AIAYN Recap](13_AIAYN_Recap/index.html)
+
+    Recap of Attention Is All You Need
