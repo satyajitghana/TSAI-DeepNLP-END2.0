@@ -75,3 +75,7 @@ NOTE: There might be dependencies issues with torchtext version used in the note
 
     Turns out there are a lot of things to learn about attention mechanism.
     There's the Bahdanau et al. paper, and the Luong et al. paper. In this assignment we implement a version of the Luong general attention model.
+
+12. [Attention Is All You Need](12_Attention_Is_All_You_Need/index.html)
+
+    A Vanilla Implementation of AIAYN Paper (https://arxiv.org/abs/1706.03762)
