@@ -83,3 +83,8 @@ NOTE: There might be dependencies issues with torchtext version used in the note
 13. [AIAYN Recap](13_AIAYN_Recap/index.html)
 
     Recap of Attention Is All You Need
+
+14. [BERT BART](14_BERT_BART/index.html)
+
+    BERT: Used it for a question answering model and sentence classification model.
+    BART: Used it for paraphrasing model.

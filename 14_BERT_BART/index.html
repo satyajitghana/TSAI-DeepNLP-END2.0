@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>14_BERT_BART</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="bert--bart">14 BERT &amp; BART</h1>
+<h2 id="assignment">Assignment</h2>
+<ol>
+<li>TASK 1: Train BERT using the code mentioned  <a href="https://drive.google.com/file/d/1Zp2_Uka8oGDYsSe5ELk-xz6wIX8OIkB7/view?usp=sharing">here (Links to an external site.)</a>  on the Squad Dataset for 20% overall samples (1/5 Epochs). Show results on 5 samples.</li>
+<li>TASK 2: Reproductive  <a href="https://mccormickml.com/2019/07/22/BERT-fine-tuning/">these (Links to an external site.)</a>  results, and show output on 5 samples.</li>
+<li>TASK 3: Reproduce the training explained in this  <a href="https://towardsdatascience.com/bart-for-paraphrasing-with-simple-transformers-7c9ea3dfdd8c">blog (Links to an external site.)</a>. You can decide to pick fewer datasets.</li>
+<li>Proceed to Session 14 - Assignment Solutions page and:
+<ol>
+<li>Submit README link for Task 1 (training log snippets and 5 sample results along with BERT description must be available) - 750</li>
+<li>Submit README link for Task 2 (training log snippets and 5 sample results) - 250</li>
+<li>Submit README link for Task 3 (training log snippets and 5 sample results along with BART description must be available) - 1000</li>
+</ol>
+</li>
+</ol>
+<h2 id="solution">Solution</h2>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>NBViewer</th>
+<th>Google Colab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TASK 1</strong>:  BERT QA Bot on SQUAD</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/BERT_Tutorial_How_To_Build_a_Question_Answering_Bot.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/BERT_Tutorial_How_To_Build_a_Question_Answering_Bot.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+</tr>
+<tr>
+<td><strong>TASK 2</strong>: BERT Sentence Classification</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/BERT_Fine_Tuning_Sentence_Classification_v2.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/BERT_Fine_Tuning_Sentence_Classification_v2.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+</tr>
+<tr>
+<td><strong>TASK 3</strong>: BART Paraphrasing</td>
+<td><a href="https://nbviewer.jupyter.org/github/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/BART_For_Paraphrasing_w_Simple_Transformers.ipynb"><img alt="Open In NBViewer" src="https://img.shields.io/badge/render-nbviewer-orange?logo=Jupyter"></a></td>
+<td><a href="https://githubtocolab.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/BART_For_Paraphrasing_w_Simple_Transformers.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"></a></td>
+</tr>
+</tbody>
+</table><h3 id="task-1-results">Task 1 Results</h3>
+<p>BERT QA Bot on SQUAD Dataset</p>
+<p><strong>Training Logs</strong></p>
+<pre><code>Train loss: 1.682131371960044
+Saving model checkpoint to checkpoint-1000
+</code></pre>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/assets/bert_training.png?raw=true" alt="bert qa model training loss"></p>
+<p><strong>Model Evaluation</strong></p>
+<pre><code>{
+  "exact": 59.230009871668315,
+  "f1": 61.210163805868284,
+  "total": 6078,
+  "HasAns_exact": 45.49828178694158,
+  "HasAns_f1": 49.634149694868604,
+  "HasAns_total": 2910,
+  "NoAns_exact": 71.84343434343434,
+  "NoAns_f1": 71.84343434343434,
+  "NoAns_total": 3168,
+  "best_exact": 59.493254359986835,
+  "best_exact_thresh": -0.10016250610351562,
+  "best_f1": 61.38637161248114,
+  "best_f1_thresh": -0.08133554458618164
+}
+</code></pre>
+<p><strong>Sample Outputs</strong></p>
+<pre><code>question       &gt;&gt; How does HT strive to give up power?
+model's answer &gt;&gt; through "ideological struggle
+
+question       &gt;&gt; When did Kublai ban the international Mongol slave trade?
+model's answer &gt;&gt; 1291
+
+question       &gt;&gt; What is the mayor of Warsaw called?
+model's answer &gt;&gt; President
+
+question       &gt;&gt; In what geographical portion of England is Abercynon located?
+model's answer &gt;&gt; south Wales
+
+question       &gt;&gt; The successful searches for what showed that the elementary particles are not observable?
+model's answer &gt;&gt; free quarks
+
+question       &gt;&gt; Where did France win a war in the 1950's
+model's answer &gt;&gt; Algeria
+
+question       &gt;&gt; What does the world's first Museum of Riding have one of the largest collections of in the world?
+model's answer &gt;&gt; art posters
+
+question       &gt;&gt; What ethnicity was Frederick William, Elector of Brandenburg?
+model's answer &gt;&gt; Prussia
+
+question       &gt;&gt; Where is a palm house with tropic plants from all over the world on display?
+model's answer &gt;&gt; the New Orangery
+
+question       &gt;&gt; Who had issued the Edict of Nantes?
+model's answer &gt;&gt; Louis XIV
+
+question       &gt;&gt; Whose activities were the French able to gain knowledge of?
+model's answer &gt;&gt; Shirley and Johnson
+
+question       &gt;&gt; According to Ellen Churchill Semple what type of climate was necessary for humans to become fully human?
+model's answer &gt;&gt; the temperate zone
+
+question       &gt;&gt; Who has a codified constitution?
+model's answer &gt;&gt; the European Union
+
+question       &gt;&gt; When was Radcliffe's curriculum secularized?
+model's answer &gt;&gt; the 18th century
+
+question       &gt;&gt; Minister Robert Dinwiddie had an investment in what significant company?
+model's answer &gt;&gt; the Ohio
+</code></pre>
+<h3 id="task-2-results">Task 2 Results</h3>
+<p>BERT Sentence Classification</p>
+<p><strong>Training Logs</strong></p>
+<pre><code>======== Epoch 1 / 4 ========
+Training...
+  Batch    40  of    241.    Elapsed: 0:00:14.
+  Batch    80  of    241.    Elapsed: 0:00:28.
+  Batch   120  of    241.    Elapsed: 0:00:43.
+  Batch   160  of    241.    Elapsed: 0:00:57.
+  Batch   200  of    241.    Elapsed: 0:01:12.
+  Batch   240  of    241.    Elapsed: 0:01:27.
+
+  Average training loss: 0.40
+  Training epcoh took: 0:01:27
+
+Running Validation...
+  Accuracy: 0.81
+  Validation took: 0:00:04
+
+======== Epoch 2 / 4 ========
+Training...
+  Batch    40  of    241.    Elapsed: 0:00:15.
+  Batch    80  of    241.    Elapsed: 0:00:30.
+  Batch   120  of    241.    Elapsed: 0:00:45.
+  Batch   160  of    241.    Elapsed: 0:01:00.
+  Batch   200  of    241.    Elapsed: 0:01:15.
+  Batch   240  of    241.    Elapsed: 0:01:30.
+
+  Average training loss: 0.27
+  Training epcoh took: 0:01:30
+
+Running Validation...
+  Accuracy: 0.83
+  Validation took: 0:00:04
+
+======== Epoch 3 / 4 ========
+Training...
+  Batch    40  of    241.    Elapsed: 0:00:15.
+  Batch    80  of    241.    Elapsed: 0:00:31.
+  Batch   120  of    241.    Elapsed: 0:00:46.
+  Batch   160  of    241.    Elapsed: 0:01:02.
+  Batch   200  of    241.    Elapsed: 0:01:17.
+  Batch   240  of    241.    Elapsed: 0:01:32.
+
+  Average training loss: 0.18
+  Training epcoh took: 0:01:33
+
+Running Validation...
+  Accuracy: 0.82
+  Validation took: 0:00:04
+
+======== Epoch 4 / 4 ========
+Training...
+  Batch    40  of    241.    Elapsed: 0:00:15.
+  Batch    80  of    241.    Elapsed: 0:00:31.
+  Batch   120  of    241.    Elapsed: 0:00:47.
+  Batch   160  of    241.    Elapsed: 0:01:02.
+  Batch   200  of    241.    Elapsed: 0:01:18.
+  Batch   240  of    241.    Elapsed: 0:01:33.
+
+  Average training loss: 0.13
+  Training epcoh took: 0:01:34
+
+Running Validation...
+  Accuracy: 0.82
+  Validation took: 0:00:04
+
+Training complete!
+</code></pre>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/assets/bert-classification-training.png?raw=true" alt="bert classification model training loss plot"></p>
+<p><strong>Sample Outputs</strong></p>
+<pre><code>sentence  &gt; the table was wiped by john clean .
+predicted &lt; unacceptable
+true cls  = unacceptable
+
+sentence  &gt; the book surprised many people .
+predicted &lt; acceptable
+true cls  = acceptable
+
+sentence  &gt; of whom are you thinking ?
+predicted &lt; acceptable
+true cls  = acceptable
+
+sentence  &gt; they were interested in his .
+predicted &lt; acceptable
+true cls  = acceptable
+
+sentence  &gt; the dog bit the cat .
+predicted &lt; acceptable
+true cls  = acceptable
+
+sentence  &gt; who always drinks milk ?
+predicted &lt; acceptable
+true cls  = acceptable
+
+sentence  &gt; john is aware of it that bill is here .
+predicted &lt; unacceptable
+true cls  = unacceptable
+
+sentence  &gt; in which way is clinton anxious to find out which budget dilemma ##s pan ##etta would be willing to solve ?
+predicted &lt; acceptable
+true cls  = unacceptable
+
+sentence  &gt; john was seen the book .
+predicted &lt; unacceptable
+true cls  = unacceptable
+
+sentence  &gt; the argument was sum ##med by the coach up .
+predicted &lt; unacceptable
+true cls  = unacceptable
+</code></pre>
+<h3 id="task-3-results">Task 3 Results</h3>
+<p>Training Logs: <a href="https://wandb.ai/satyajit_meow/Paraphrasing%20with%20BART?workspace=user-satyajit_meow">https://wandb.ai/satyajit_meow/Paraphrasing%20with%20BART?workspace=user-satyajit_meow</a></p>
+<p>BART Paraphrasing</p>
+<pre><code>Text  &gt; How can I be less insecure about my short height?
+Pred  &lt; How can I be less insecure about my height?
+Truth = How can I be less insecure about my short height and looks?
+
+Text  &gt; What are tips for saving money?
+Pred  &lt; What are some tips for saving money?
+Truth = What are the best methods of saving money?
+
+Text  &gt; Why November 14, birthday of Jawaharlal is celebrated as Children's day? What exceptional thing did he do to be considered as dearest to children?
+Pred  &lt; Why is the birthday of Jawaharlal Nehru celebrated as Children's Day? What exceptional thing did he do to be considered as dearest to children?
+Truth = Why we celebrate Nehru's birthday as children's day?
+
+Text  &gt; What is it like to visit India?
+Pred  &lt; What is it like to visit India?
+Truth = What's it like to visit India?
+
+Text  &gt; Is a third world war coming?
+Pred  &lt; Is there a third world war on the way?
+Truth = Will there be a World War III soon?
+
+Text  &gt; Can we pursue biotechnology after B.tech in mechanical engineering?
+Pred  &lt; Can we pursue biotechnology after B.tech in mechanical engineering?
+Truth = After completing B.Tech in mechanical engineering, what job secured course should you take?
+
+Text  &gt; What does the MATLAB application do?
+Pred  &lt; What does MATLAB application do?
+Truth = What are application of MATLAB?
+
+Text  &gt; Who is the best online dating headshot photographer in San Francisco?
+Pred  &lt; Who is the best online dating photographer in San Francisco?
+Truth = Who are the best Tinder photographers in San Francisco?
+
+Text  &gt; How should I prepare for an Amazon SDE internship interview?
+Pred  &lt; How do I prepare for Amazon SDE internship interview?
+Truth = How should I prepare for the amazon internship written test and interview?
+
+Text  &gt; English cooking dominated early national cooking ; but as new immigrants arrived from other countries, other colonial soups gained popularity.
+Pred  &lt; Paraphrase: English cooking dominated early national cooking ; but as new immigrants arrived from other countries, other colonial soups gained popularity.
+Truth = Cooking dominated early national cuisine, but as new immigrants arrived from other countries, other colonial soups gained popularity.
+
+Text  &gt; What is the smallest decision you have made leading to the biggest impact on your life?
+Pred  &lt; What is the smallest decision you have made leading to the biggest impact on your life?
+Truth = What seemingly unimportant decision made the most profound impact on your life?
+
+Text  &gt; What are the easy ways to earn money online?
+Pred  &lt; How can I earn money online?
+Truth = What is a way to make money online?
+
+Text  &gt; What can I do with C after learning the basics?
+Pred  &lt; What can I do after learning C?
+Truth = What can I do after learning Basics of C?
+
+Text  &gt; Where can I get professional advice for buying and selling a property in Sydney?
+Pred  &lt; Where can I get professional advice for buying and selling a property in Sydney?
+Truth = Where can I get necessary advice for any property transaction in Sydney?
+
+Text  &gt; Whàt is the dark web?
+Pred  &lt; What is the dark web?
+Truth = Wat is the dark web?
+</code></pre>
+<h2 id="bert">BERT</h2>
+<p><strong>B</strong>idirectional <strong>E</strong>ncoder <strong>R</strong>epresentations from <strong>T</strong>ransformers</p>
+<p>BERT is basically a trained Transformer Encoder stack. Both BERT models (Large &amp; Base) have large number of encoder layers (Transformer Blocks) - 12 for the Base version and 24 for the large version.</p>
+<p>Model Input: The first input token is <code>[CLS]</code>, which stands for Classification. Just like a normal Transformer, BERT takes a sequence of words as input.<br>
+Model Outputs: Each position of the sequence outputs a vector of size <code>hidden_size</code>. For sentence classification we only focus on the first position (the <code>[CLS]</code> token position. The vector can now be used to classify into the class you chose. If you have more classes, this last layer (Classifier Network) is only changed.</p>
+<p>As opposed to directional models, which read the text input sequentially (left-to-right or right-to-left), the Transformer encoder reads the entire sequence of words at once. Therefore it is considered bidirectional, though it would be more accurate to say that it’s non-directional.</p>
+<p>Before feeding word sequences into BERT, 15% of the words in each sequence are replaced with a <code>[MASK]</code> token. The model then attempts to predict the original value of the masked words, based on the context provided by the other, non-masked, words in the sequence.</p>
+<p>The BERT loss function takes into consideration only the prediction of the masked values and ignores the prediction of the non-masked words. As a consequence, the model converges slower than directional models.</p>
+<p>In the BERT training process, the model receives pairs of sentences as input and learns to predict if the second sentence in the pair is the subsequent sentence in the original document. During training, 50% of the inputs are a pair in which the second sentence is the subsequent sentence in the original document, while in the other 50% a random sentence from the corpus is chosen as the second sentence. The assumption is that the random sentence will be disconnected from the first sentence.</p>
+<h2 id="bart">BART</h2>
+<p><strong>B</strong>idirectional and <strong>A</strong>uto-<strong>R</strong>egressive <strong>T</strong>ransformers</p>
+<p>BART is a denoising autoencoder built with a sequence-to-sequence model that is applicable to a very wide range of end tasks.</p>
+<h3 id="pretraining-fill-in-the-span">Pretraining: Fill In the Span</h3>
+<p>BART is trained on tasks where spans of text are replaced by masked tokens, and the model must learn to reconstruct the original document from this altered span of text.</p>
+<p>BART improves on BERT by replacing the BERT’s fill-in-the-blank cloze task with a more complicated mix of pretraining tasks.</p>
+<p><img src="https://github.com/satyajitghana/TSAI-DeepNLP-END2.0/blob/main/14_BERT_BART/assets/text_infilling.png?raw=true" alt="text infilling"></p>
+<p>In the above example the origin text is <code>A B C D E</code> and the span <code>C, D</code> is masked before sending it to the encoder, also an extra mask is placed between <code>A</code> and <code>B</code> and one mask is removed between <code>B</code> and <code>E</code>, now the corrupted document is <code>A _ B _ E</code>. The encoder takes this as input, encodes it and throws it to the decoder.</p>
+<p>The decoder must now use this encoding to reconstruct the original document. <code>A B C D E</code></p>
+<hr>
+<p align="center">
+satyajit<br>
+:wq 🐈‍⬛
+</p>
+</div>
+</body>
+
+</html>
