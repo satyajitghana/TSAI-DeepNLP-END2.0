@@ -1,0 +1,57 @@
+{
+    "data": {
+        "repository": {
+            "issue": {
+                "comments": {
+                    "nodes": [
+                        {
+                            "body": "Hi @RuABraun, after 1.3, we have a new building script for android - https://pytorch.org/mobile/android/#building-pytorch-android-from-source. Could you try that and see if the error still exists?\r\ncc @IvanKobzarev @ljk53 "
+                        },
+                        {
+                            "body": "@RuABraun,\r\nThat might be not the answer for your problem:\r\nI tried your model locally using gradle deps `org.pytorch:pytorch_android:1.3.0` and:\r\n```\r\n    Module module = Module.load(assetFilePath(this, \"model_issue_27726.pt\"));\r\n    Tensor inputTensor = Tensor.fromBlob(new float[] {1.f, 1.f, 1.f}, new long[] {1, 3});\r\n    final Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();\r\n    final float[] out = outputTensor.getDataAsFloatArray();\r\n```\r\nIt works for me on emulator.\r\n\r\nYou can check your building process(could you please add comment how you run it CMakeLists/line etc.) comparing it with what we use to build libpytorch.so for android(skipping fbjni as it is used only for jni layer): https://github.com/pytorch/pytorch/blob/master/android/pytorch_android/CMakeLists.txt#L43-L63\r\n```\r\nfunction(import_static_lib name)\r\n  add_library(${name} STATIC IMPORTED)\r\n  set_property(\r\n      TARGET ${name}\r\n      PROPERTY IMPORTED_LOCATION\r\n      ${CMAKE_CURRENT_LIST_DIR}/src/main/jniLibs/${ANDROID_ABI}/${name}.a)\r\nendfunction(import_static_lib)\r\n\r\nimport_static_lib(libtorch)\r\nimport_static_lib(libc10)\r\nimport_static_lib(libnnpack)\r\nimport_static_lib(libpytorch_qnnpack)\r\nimport_static_lib(libeigen_blas)\r\nimport_static_lib(libcpuinfo)\r\nimport_static_lib(libclog)\r\n\r\ntarget_link_libraries(pytorch\r\n    fbjni\r\n    -Wl,--gc-sections\r\n    -Wl,--whole-archive\r\n    libtorch\r\n    -Wl,--no-whole-archive\r\n    libc10\r\n    libnnpack\r\n    libpytorch_qnnpack\r\n    libeigen_blas\r\n    libcpuinfo\r\n    libclog\r\n)\r\n```\r\n\r\nWhat is the android_abi and android version of device you tried  it to run? (arm64-v8a?)\r\n\r\n\r\n"
+                        },
+                        {
+                            "body": "Sorry I stupidly copy-pasted my environment from the last issue I created (a week or two ago). :man_facepalming: The pytorch version is different than what I initially posted, it's `1.4.0a0+cddc147`, updated the OP. \r\n\r\nI'll add more info later."
+                        },
+                        {
+                            "body": "CC @dreiss @jia-kai not sure how you are tracking mobile issues."
+                        },
+                        {
+                            "body": "@gchanan Did you accidentally mentioned me? I'm not sure what's going on here"
+                        },
+                        {
+                            "body": "> CC @dreiss @jia-kai not sure how you are tracking mobile issues.\r\n\r\ncc @ljk53. "
+                        },
+                        {
+                            "body": "The ABI is `armeabi-v7a`, NDK leve is at 18, android SDK 28.\r\n\r\nTo use pytorch I just use `include_directories()` to add in `${TORCHPATH}/include`, and then in `target_link_libraries` put in the paths to the static libraries, those are:\r\n```\r\n#${TORCHPATH}/lib/libtorch.a ${TORCHPATH}/lib/libc10.a ${TORCHPATH}/lib/libnnpack.a ${TORCHPATH}/lib/libcpuinfo.a\r\n#${TORCHPATH}/lib/libeigen_blas.a ${TORCHPATH}/lib/libpytorch_qnnpack.a\r\n```\r\n`${TORCHPATH}` points at the build directory (`.../pytorch/build_android_${ANDROID_ABI}`).\r\n\r\nAnd then use `#include \"torch/script.h\"`.\r\n\r\nI noticed in the `CMakeLists.txt` of pytorch, there is an option:\r\n```\r\nUSE_PYTORCH_QNNPACK \"Use ATen/QNNPACK (quantized 8-bit operators)\"\r\n```\r\nSo does using `QNNPACK` mean one uses `ATen`, or is it saying \"use ATen **or** QNNPACK\"? I'm not quantising my pytorch model actually (maybe that's relevant).\r\n\r\nI also do have QNNPACK as a separate dependency in the android app CMakeLists, as another DNN toolkit I'm using uses it. Maybe that's messing things up (doubt it but thought it worth mentioning).\r\n"
+                        },
+                        {
+                            "body": "> CC @dreiss @jia-kai not sure how you are tracking mobile issues.\r\n\r\n@gchanan to answer your question: we discussed with Edward last week - plan to still rely on master triage oncall to classify mobile issues with the \"mobile\" label. Mobile team oncall will monitor this label.\r\n"
+                        },
+                        {
+                            "body": "> #${TORCHPATH}/lib/libtorch.a ${TORCHPATH}/lib/libc10.a ${TORCHPATH}/lib/libnnpack.a ${TORCHPATH}/lib/libcpuinfo.a\r\n> #${TORCHPATH}/lib/libeigen_blas.a ${TORCHPATH}/lib/libpytorch_qnnpack.a\r\n\r\n@RuABraun, looks like you plan to use libtorch c++ library directly - if so you probably should follow this CMake that @IvanKobzarev posted: https://github.com/pytorch/pytorch/blob/master/android/pytorch_android/CMakeLists.txt#L43-L63\r\n\r\nSpecifically you want to use \"-Wl,--whole-archive\" before linking \"libtorch\" as otherwise some operators won't be registered correctly and might cause missing op error at runtime.\r\n"
+                        },
+                        {
+                            "body": "So I modified my CMakeLists like you suggested to use `--whole-archive`:\r\n```\r\n( [...]\r\n${QNNPATH}/libqnnpack.a\r\n-Wl,--gc-sections -Wl,--whole-archive ${TORCHPATH}/lib/libtorch.a -Wl,--no-whole-archive ${TORCHPATH}/lib/libc10.a \r\n${TORCHPATH}/lib/libnnpack.a ${TORCHPATH}/lib/libcpuinfo.a ${TORCHPATH}/lib/libclog.a \r\n${TORCHPATH}/lib/libeigen_blas.a ${TORCHPATH}/lib/libpytorch_qnnpack.a )\r\n```\r\nAnd I'm getting a different error now, but it's a very similar one:\r\n```\r\nE/libc++abi: terminating with uncaught exception of type torch::jit::script::ErrorReport: \r\n    Unknown builtin op: aten::_adaptive_avg_pool2d_backward.\r\n    Could not find any similar ops to aten::_adaptive_avg_pool2d_backward. This op may not exist or may not be currently supported in TorchScript.\r\n```\r\nNote I'm still using the simple single layer model..."
+                        },
+                        {
+                            "body": "@RuABraun another thing our java wrapper does which you might miss is to set AutoGradMode before running inference: https://github.com/pytorch/pytorch/blob/master/android/pytorch_android/src/main/cpp/pytorch_jni.cpp#L617\r\n```\r\ntorch::autograd::AutoGradMode guard(false);\r\n```\r\n\r\nThis is because our mobile libtorch library is inference only, which will fail if autograd is enabled.\r\n\r\nBut I don't see why it complains about missing \"_adaptive_avg_pool2d_backward\" - your model doesn't call avg_pool2d at all. Are you sure you are using the single layer model? I couldn't repro this error with the code you posted."
+                        },
+                        {
+                            "body": "Thanks for the hint about disabling autograd!\r\n\r\nI'll make a simple android app with pytorch to make things simpler (I have lots of other C++ dependencies) and make it easier to reproduce the error. Will post tomorrow."
+                        },
+                        {
+                            "body": "Oh man, I went through the bother of reproducing the error by creating a simple app, then added `torch::autograd::AutoGradMode guard(false);` and that fixed everything (also in my real app)!\r\n\r\nI've uploaded the app code [here](https://github.com/RuABraun/android-with-pytorch). I'm hoping that should make it easy for you to reproduce the `_adaptive_avg_pool2d_backward` error."
+                        },
+                        {
+                            "body": "> Oh man, I went through the bother of reproducing the error by creating a simple app, then added `torch::autograd::AutoGradMode guard(false);` and that fixed everything (also in my real app)!\r\n\r\nGlad to know it helps. Did it fix the \"_adaptive_avg_pool2d_backward\" error or not?\r\n\r\nIn case you don't know, we also created a sample android app that you can play with: https://github.com/pytorch/android-demo-app\r\n\r\nMore information can be found at: https://pytorch.org/mobile/home/"
+                        },
+                        {
+                            "body": "Yes it fixed it (though I don't understand why).\r\n\r\nThe announcement is why I bothered to try and give pytorch on mobile another go (this is my 4th attempt)!"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
