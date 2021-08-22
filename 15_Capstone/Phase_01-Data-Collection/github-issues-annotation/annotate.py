@@ -3,7 +3,7 @@ from typing import Tuple
 
 from PyQt6.QtCore import QModelIndex
 
-sys.path.append("qt-material")
+# sys.path.append("qt-material")
 
 from PyQt6 import QtGui, QtWidgets
 from PyQt6.QtWidgets import (
@@ -17,13 +17,15 @@ from PyQt6.QtWidgets import (
     QWidget,
     QVBoxLayout,
 )
-from qt_material import apply_stylesheet
+
+# from qt_material import apply_stylesheet
 from bs4 import BeautifulSoup
 import json
 from pathlib import Path
 import requests
 from graphql_utils import run_query, query, headers
-from qt_material import apply_stylesheet
+
+# from qt_material import apply_stylesheet
 from dataclasses import dataclass, field
 
 

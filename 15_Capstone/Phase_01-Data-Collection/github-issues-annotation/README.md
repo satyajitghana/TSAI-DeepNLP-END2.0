@@ -1,3 +1,5 @@
 # GitHub Issues Annotation
 
-go through issue 3301 to 3350
+I created an annotation tool to choose the correct comment (solution) for each issue.
+
+![issue_annotator](annotation_tool.png)
